@@ -17,6 +17,11 @@ This is the collection of my top level C headers. Meaning they are or should be 
 
 NOTE: Generally C headers  can be used in C++ code too.
 
+## How to use
+
+- `dbj_c_top` and `dbj_c_top` are two top level libraries.
+- have one or the other on the path 
+
 <br/>
 
 > CAVEAT EMPTOR
@@ -26,6 +31,8 @@ NOTE: Generally C headers  can be used in C++ code too.
 
 # This is CLANG-CL specific code.
 
-By that we mean code compile with 64 bit clang-cl compiler. 
+By that we mean 
 
-That builds and runs on Windows, using Visual Studio. Same as MS STL is based on WIN32 we are based on WIN32. And WIN32 is C API.
+- compile with 64 bit clang-cl compiler. 
+- builds and runs on Windows, using Visual Studio. 
+- Same as MS STL is based on WIN32 we are based on WIN32. And WIN32 is C API.
