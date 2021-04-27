@@ -9,13 +9,33 @@
    Thus feel free to peruse macros and things from vcruntime.h
 */
 
-#ifndef __cplusplus
-#error DBJ  requires C++ compiler
+#if __STDC_VERSION__ < 201112L
+#error __STDC_VERSION__ has to exist and it has to be at least 201112L, aka C11
 #endif
+  
+
 
 #ifdef __clang__
 #pragma clang system_header
 #endif
+
+#undef DBJ_EXTERN_C_BEGIN
+#undef DBJ_EXTERN_C_END
+
+#ifdef __cplusplus                
+#define		DBJ_EXTERN_C_BEGIN extern "C" {
+#define		DBJ_EXTERN_C_END  }
+#else // ! __cplusplus
+#define		DBJ_EXTERN_C_BEGIN
+#define		DBJ_EXTERN_C_END
+#endif // !__cplusplus
+
+#if defined(__clang__)
+#define DBJ_PURE_FUNCTION __attribute__((const))
+#else
+#define DBJ_PURE_FUNCTION
+#endif
+
 
 // this means e.g. __attribute__ ((unused)) will dissapear in not msvc builds
 // https://stackoverflow.com/a/11125299/10870835
@@ -24,10 +44,10 @@
 //#endif  // ! __clang__
 
 // thus this is active only on not msvc C builds aka clang-cl
-#undef DBJ_UNUSED_F
-#if defined(__clang__) || defined(__GNUC__)
-#define DBJ_UNUSED_F __attribute__((unused))
-#endif
+// #undef DBJ_UNUSED_F
+// #if defined(__clang__) || defined(__GNUC__)
+// #define DBJ_UNUSED_F __attribute__((unused))
+// #endif
 
 // void __fastfail(unsigned int code);
 // FAST_FAIL_<description> symbolic constant from winnt.h or wdm.h that indicates the reason for process termination.
@@ -65,34 +85,8 @@ extern "C" void __fastfail(unsigned int);
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <crtdbg.h>
+#include <crtdbg.h> /* MSFT UCRT only */
 #include <stddef.h> /* size_t */
-
-#pragma endregion
-
-#pragma region ms stl including
-
-// new failure will provoke fast exit -- ALWAYS!
-// this is APP WIDE for all users of dbj
-#ifndef DBJ_TERMINATE_ON_BAD_ALLOC
-#define DBJ_TERMINATE_ON_BAD_ALLOC 1
-#endif // DBJ_TERMINATE_ON_BAD_ALLOC
-
-#ifndef _CPPUNWIND
-#define DBJ_TERMINATE_ON_BAD_ALLOC 1
-#else
-#define DBJ_TERMINATE_ON_BAD_ALLOC 0
-#endif //  _CPPUNWIND
-
-#if DBJ_TERMINATE_ON_BAD_ALLOC
-#include <new>
-#endif // DBJ_TERMINATE_ON_BAD_ALLOC
-
-#include <vector>
-
-#pragma endregion
-
-#pragma region wall of macros
 
 #undef DBJ_EMPTY_STMNT
 #define DBJ_EMPTY_STMNT do { } while(0)
@@ -111,42 +105,12 @@ do { \
 
 
 
+/// -------------------------------------------------------------------------------
+/// be advised: static_assert is C11 macro 
+/// https://en.cppreference.com/w/c/error/static_assert
 #undef DBJ_UNUSED
-#define DBJ_UNUSED(...) static_assert(noexcept(__VA_ARGS__, true), #__VA_ARGS__)
+#define DBJ_UNUSED(...) static_assert((__VA_ARGS__, true), #__VA_ARGS__)
 
-/*
-this is for variables only
-example
-long DBJ_MAYBE(var) {42L} ;
-after expansion:
-long var [[maybe_unused]] {42L} ;
-*/
-#define DBJ_MAYBE(x) x [[maybe_unused]]
-
-#undef DBJ_NSPACE_BEGIN
-#define DBJ_NSPACE_BEGIN \
-	namespace dbj        \
-	{
-
-#undef DBJ_NSPACE_END
-#define DBJ_NSPACE_END } /* namespace dbj */
-
-#undef DBJ_EXTERN_C_BEGIN
-#undef DBJ_EXTERN_C_END
-
-#ifdef __cplusplus                
-#define		DBJ_EXTERN_C_BEGIN extern "C" {
-#define		DBJ_EXTERN_C_END  }
-#else // ! __cplusplus
-#define		DBJ_EXTERN_C_BEGIN
-#define		DBJ_EXTERN_C_END
-#endif // !__cplusplus
-
-#if defined(__clang__)
-#define DBJ_PURE_FUNCTION __attribute__((const))
-#else
-#define DBJ_PURE_FUNCTION
-#endif
 
 /// -------------------------------------------------------------------------------
 /// https://stackoverflow.com/a/29253284/10870835
@@ -217,7 +181,7 @@ long var [[maybe_unused]] {42L} ;
 #define _DBJ_EXPAND(s) _DBJ_EXPAND_(s)
 
 #ifdef _MSVC_LANG
-// https://developercommunity.visualstudio.com/content/problem/195665/-line-cannot-be-used-as-an-argument-for-constexpr.html
+// https://developercommunity.visualstudio.com/content/problem/195665/-line-cannot-be-used-as-an-argument-for-.html
 #define DBJ_CONSTEXPR_LINE long(_DBJ_CONCATENATE(__LINE__, U))
 #else
 #define DBJ_CONSTEXPR_LINE __LINE__
@@ -243,79 +207,15 @@ timestamp included
 
 /*
 -----------------------------------------------------------------------------------------
-deciphering the C++ version
 */
 
-#undef DBJ_CPP03
-#undef DBJ_CPP11
-#undef DBJ_CPP14
-#undef DBJ_CPP17
-#undef DBJ_CPP20
-
-#define DBJ_HAS_CXX17 _HAS_CXX17
-#define DBJ_HAS_CXX20 _HAS_CXX20
-
-// usage is without ifndef/ifdef
-#if !DBJ_HAS_CXX17
-#error DBJ  requires the standard C++17 (or better) compiler
-#endif
-
-#if DBJ_HAS_CXX20
-#pragma message("WARNING -- DBJ is not fully ready yet for the standard C++20 (or higher) -- " __TIMESTAMP__)
-#endif
-
-#ifdef _KERNEL_MODE
-#define DBJ_NONPAGESECTION __declspec(code_seg("$dbj__kerneltext$"))
-#else
-#define DBJ_NONPAGESECTION
-#endif // _KERNEL_MODE
-/*
-usage:
-
-class NONPAGESECTION MyNonPagedClass
-{
-	...
-};
-*/
-
-#pragma endregion
-
-#if DBJ_TERMINATE_ON_BAD_ALLOC
-// do not throw bad_alloc
-// call default termination on heap memory exhausted
-// NOTE: this is not declaration but immediate execution
-// of anonymous lambda
-inline auto setting_new_handler_to_terminate_ = []() {
-	//[[noreturn]] inline void __CRTDECL terminate() noexcept { // handle exception termination
-	//	_CSTD abort();
-	//}
-
-	std::set_new_handler(
-		[] {
-			perror(__FILE__ " Terminating because of heap exhaustion");
-			auto dummy = []() -> void { ::exit(EXIT_FAILURE); };
-			DBJ_UNUSED(dummy);
-		});
-	return true;
-}();   // immediate execution
-#endif // DBJ_TERMINATE_ON_BAD_ALLOC
-
-// for C code in C files
-// not sure why is this here
-extern "C"
-{
-	// https://godbolt.org/z/eP7Txf
-#undef dbj_assert_static
-#define dbj_assert_static(e) (void)(1 / (e))
-} // "C"
+// https://en.cppreference.com/w/c/error/static_assert
+#undef dbj_assert_static _Static_assert
 
 /*
-  there is no `repeat` in C++
+  there is no `repeat` in C
 
-this macro is actually superior solution to the repeat template function
-dbj_repeat_counter_ is local for each macro expansion
-usage:
-	  DBJ_REPEAT(50){ std::printf("\n%d", dbj_repeat_counter_ ); }
+	  DBJ_REPEAT(50){ printf("\n%d", dbj_repeat_counter_ ); }
 */
 #undef DBJ_REPEAT
 #define DBJ_REPEAT(N) for (size_t dbj_repeat_counter_ = 0; dbj_repeat_counter_ < static_cast<size_t>(N); ++dbj_repeat_counter_)
@@ -327,54 +227,40 @@ usage:
   (char const * const)memset(memset(alloca(LEN_+1), 0, LEN_+1), CHAR_, LEN_)) 
 
 /// -------------------------------------------------------------------------------
-DBJ_NSPACE_BEGIN
-
-enum class SEMVER
+DBJ_EXTERN_C_BEGIN
+enum DBJ_CAPI_SEMVER
 {
-	major = 3,
-	minor = 9,
+	major = 0,
+	minor = 1,
 	patch = 0
 };
 // SEMVER + TIMESTAMP
-constexpr auto VERSION = "3.9.0 [" __DATE__ "]";
+ auto DBJ_CAPI_VERSION = "0.1.0 [" __DATE__ "]";
 
-DBJ_UNUSED(VERSION);
+DBJ_UNUSED(DBJ_CAPI_VERSION);
 
 ///	-----------------------------------------------------------------------------------------
-#pragma region dbj numerics
 // compile time extremely precise PI approximation
 //
 //  https://en.wikipedia.org/wiki/Proof_that_22/7_exceeds_π
 // https://www.wired.com/story/a-major-proof-shows-how-to-approximate-numbers-like-pi/
-constexpr inline auto DBJ_PI = 104348 / 33215;
-#pragma endregion
+enum { DBJ_PI = 104348 / 33215 } ;
 
-/* inherit it as private */
-struct no_copy_no_move
-{
-	no_copy_no_move() = default;
-	virtual ~no_copy_no_move() = default;
-
-	no_copy_no_move(no_copy_no_move const&) = delete;
-	no_copy_no_move& operator=(no_copy_no_move const&) = delete;
-
-	no_copy_no_move(no_copy_no_move&&) = delete;
-	no_copy_no_move& operator=(no_copy_no_move&&) = delete;
-};
 
 // the fallacy of the zstring leads to this
 // we have no pointer and size, just the possibility of
 // existence of '\0'
-constexpr bool is_empty(const char* text) noexcept
+ inline bool is_empty(const char* text) 
 {
 	return text == nullptr || *text == '\0';
 }
 
-constexpr bool wis_empty(const wchar_t* text) noexcept
+ inline bool wis_empty(const wchar_t* text) 
 {
 	return text == nullptr || *text == L'\0';
 }
 
-DBJ_NSPACE_END
+DBJ_EXTERN_C_END
+
 
 #endif // DBJ_COMMON_INC
