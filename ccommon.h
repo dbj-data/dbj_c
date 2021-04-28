@@ -9,12 +9,31 @@
    Thus feel free to peruse macros and things from vcruntime.h
 */
 
+/// -------------------------------------------------------------------------------
+/// stolen from vcruntime.h
+#define _DBJ_STRINGIZE_(x) #x
+#define _DBJ_STRINGIZE(x) _DBJ_STRINGIZE_(x)
+
+#define _DBJ_WIDE_(s) L##s
+#define _DBJ_WIDE(s) _DBJ_WIDE_(s)
+
+#define _DBJ_CONCATENATE_(a, b) a##b
+#define _DBJ_CONCATENATE(a, b) _DBJ_CONCATENATE_(a, b)
+
+#define _DBJ_EXPAND_(s) s
+#define _DBJ_EXPAND(s) _DBJ_EXPAND_(s)
+
+#undef MIN
+#define MIN(a,b) (((b) < (a)) ? (b) : (a))
+
 
 #define DBJ_CAPI_SEMVER_MAJOR 0
 #define DBJ_CAPI_SEMVER_MINOR 1
 #define DBJ_CAPI_SEMVER_PATCH 0
 // SEMVER + TIMESTAMP
-#define  DBJ_CAPI_VERSION "0.1.0 [" __DATE__ "]"
+#define  DBJ_VERSION_(M,R,P) #M "." #R "." #P " [" __DATE__ "] "
+#define  DBJ_CAPI_VERSION_(M,R,P) DBJ_VERSION_(M,R,P)
+#define  DBJ_CAPI_VERSION() DBJ_CAPI_VERSION_( DBJ_CAPI_SEMVER_MAJOR, DBJ_CAPI_SEMVER_MINOR, DBJ_CAPI_SEMVER_PATCH)
 
 #if __STDC_VERSION__ < 201112L
 #error __STDC_VERSION__ has to exist and it has to be at least 201112L, aka C11
@@ -41,24 +60,12 @@
 #define		DBJ_EXTERN_C_END
 #endif // !__cplusplus
 
+// requires not void return type
 #if defined(__clang__)
 #define DBJ_PURE_FUNCTION __attribute__((const))
 #else
 #define DBJ_PURE_FUNCTION
 #endif
-
-
-// this means e.g. __attribute__ ((unused)) will dissapear in not msvc builds
-// https://stackoverflow.com/a/11125299/10870835
-//#if !defined(__clang__) || !defined(__GNUC__)
-//#define __attribute__(x)
-//#endif  // ! __clang__
-
-// thus this is active only on not msvc C builds aka clang-cl
-// #undef DBJ_UNUSED_F
-// #if defined(__clang__) || defined(__GNUC__)
-// #define DBJ_UNUSED_F __attribute__((unused))
-// #endif
 
 /*
 *
@@ -92,6 +99,11 @@
 #include <stddef.h> /* size_t */
 #include <errno.h>
 
+// it should be part of assert.h by C11 std or better
+#ifndef static_assert 
+#define static_assert _Static_assert
+#endif  // static_assert
+
 /// -------------------------------------------------------------------------------
 /// https://stackoverflow.com/a/29253284/10870835
 
@@ -99,40 +111,18 @@
 #error NDEBUG *is* standard macro and has to exist in RELEASE builds
 #endif
 
-#undef DBJ_RELEASE_BUILD
-#ifdef NDEBUG
-#define DBJ_RELEASE_BUILD
-#endif
-
-/// -------------------------------------------------------------------------------
-/// stolen from vcruntime.h
-#define _DBJ_STRINGIZE_(x) #x
-#define _DBJ_STRINGIZE(x) _DBJ_STRINGIZE_(x)
-
-#define _DBJ_WIDE_(s) L##s
-#define _DBJ_WIDE(s) _DBJ_WIDE_(s)
-
-#define _DBJ_CONCATENATE_(a, b) a##b
-#define _DBJ_CONCATENATE(a, b) _DBJ_CONCATENATE_(a, b)
-
-#define _DBJ_EXPAND_(s) s
-#define _DBJ_EXPAND(s) _DBJ_EXPAND_(s)
-
-#undef MIN
-#define MIN(a,b) (((b) < (a)) ? (b) : (a))
-
 // https://stackoverflow.com/a/19453814/10870835
 // it raises an error when the argument is not an array (or a pointer)
 // error: subscripted value is neither array nor pointer nor vector
-#undef IS_INDEXABLE
-#define IS_INDEXABLE(arg) (sizeof(arg[0]))
+#undef DBJ_IS_INDEXABLE
+#define DBJ_IS_INDEXABLE(arg) (sizeof(arg[0]))
 
 // The legend says this is from some GOOGLE project, perhaps called "Chromium"?
 // basically use any macro you fancy, as long as it works better
 // in any case COUNT_OF should not compile
 // id A and B are not array literals
-#undef COUNT_OF
-#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+#undef DBJ_COUNT_OF
+#define DBJ_COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
 
 #undef DBJ_EMPTY_STMNT
 #define DBJ_EMPTY_STMNT do { } while(0)
@@ -141,25 +131,16 @@
 // #define DBJ_ASSERT _ASSERTE
 #define DBJ_ASSERT( expression, message ) _ASSERTE( ( expression ) && ( message ) )
 
-// moved to cdebug.h
-// #undef  DBJ_VERIFY
-// #define DBJ_VERIFY(expr) \
-// do { \
-// 	if ( false == !! ((expr)) ){ \
-// 	perror( "\n" __FILE__ "(" _CRT_STRINGIZE(__LINE__)  ")\nExpression: " #expr "\nSystem error: ") ; \
-// 	exit(0);   } \
-// } while(0)
-
 /// -------------------------------------------------------------------------------
 /// be advised: static_assert is C11 macro 
 /// https://en.cppreference.com/w/c/error/static_assert
 #undef DBJ_UNUSED
 /// #define DBJ_UNUSED(...) static_assert((__VA_ARGS__, true), #__VA_ARGS__)
-#define DBJ_UNUSED(...) GULP(__VA_ARGS__)
+#define DBJ_UNUSED(...) DBJ_GULP(__VA_ARGS__)
 
 // genius?
-#undef GULP
-#define GULP(...) (void)(0)
+#undef DBJ_GULP
+#define DBJ_GULP(...) (void)(0)
 
 /// -------------------------------------------------------------------------------
 
@@ -193,9 +174,6 @@ timestamp included
 */
 DBJ_EXTERN_C_BEGIN
 
-// https://en.cppreference.com/w/c/error/static_assert
-#undef dbj_assert_static _Static_assert
-
 /*
   there is no `repeat` in C
 
@@ -218,22 +196,31 @@ DBJ_EXTERN_C_BEGIN
 // the fallacy of the zstring leads to this
 // we have no pointer and size, just the possibility of
 // existence of '\0'
- inline bool is_empty(const char* text) 
+DBJ_PURE_FUNCTION static inline bool is_empty(const char* const text)
 {
 	return text == 0 || *text == '\0';
 }
 
- inline bool wis_empty(const wchar_t* text) 
+static_assert(sizeof is_empty, "");
+
+DBJ_PURE_FUNCTION static inline bool wis_empty(const wchar_t* const text)
 {
 	return text == 0 || *text == L'\0';
 }
 
+static_assert(sizeof wis_empty, "");
+
+
 // void __fastfail(unsigned int code);
 // FAST_FAIL_<description> symbolic constant from winnt.h or wdm.h that indicates the reason for process termination.
 // #include <winnt.h>
-void __fastfail(unsigned int);
 #undef DBJ_FAST_FAIL
+#ifdef _WIN32
+void __fastfail(unsigned int);
 #define DBJ_FAST_FAIL __fastfail(7)
+#else
+#define DBJ_FAST_FAIL exit(-1)
+#endif
 
 DBJ_EXTERN_C_END
 
