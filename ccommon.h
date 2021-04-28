@@ -9,14 +9,25 @@
    Thus feel free to peruse macros and things from vcruntime.h
 */
 
+
+#define DBJ_CAPI_SEMVER_MAJOR 0
+#define DBJ_CAPI_SEMVER_MINOR 1
+#define DBJ_CAPI_SEMVER_PATCH 0
+// SEMVER + TIMESTAMP
+#define  DBJ_CAPI_VERSION "0.1.0 [" __DATE__ "]"
+
 #if __STDC_VERSION__ < 201112L
 #error __STDC_VERSION__ has to exist and it has to be at least 201112L, aka C11
 #endif
-  
 
+#ifdef  __STDC_NO_VLA__  // ! ( defined(__clang__)  || (__GNUC__))
+#error Sorry this code requires VL Types 
+#endif
 
 #ifdef __clang__
 #pragma clang system_header
+#else // ! __clang__
+#error please use clang-cl.exe as packed with Visual Studio 2019
 #endif
 
 #undef DBJ_EXTERN_C_BEGIN
@@ -49,13 +60,6 @@
 // #define DBJ_UNUSED_F __attribute__((unused))
 // #endif
 
-// void __fastfail(unsigned int code);
-// FAST_FAIL_<description> symbolic constant from winnt.h or wdm.h that indicates the reason for process termination.
-// #include <winnt.h>
-extern "C" void __fastfail(unsigned int);
-#undef DBJ_FAST_FAIL
-#define DBJ_FAST_FAIL __fastfail(7)
-
 /*
 *
 * POSIX is not deprecated ;)
@@ -69,8 +73,6 @@ extern "C" void __fastfail(unsigned int);
 
 	 must be added as a compiler CLI switch
 */
-#pragma region crt including
-
 #ifdef __STDC_ALLOC_LIB__
 #define __STDC_WANT_LIB_EXT2__ 1
 #else
@@ -82,89 +84,25 @@ extern "C" void __fastfail(unsigned int);
 
 #include <assert.h> // NDEBUG used here
 #include <time.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <crtdbg.h> /* MSFT UCRT only */
 #include <stddef.h> /* size_t */
-
-#undef DBJ_EMPTY_STMNT
-#define DBJ_EMPTY_STMNT do { } while(0)
-
-#undef DBJ_ASSERT
-// #define DBJ_ASSERT _ASSERTE
-#define DBJ_ASSERT( expression, message ) _ASSERTE( ( expression ) && ( message ) )
-
-#undef  DBJ_VERIFY
-#define DBJ_VERIFY(expr) \
-do { \
-	if ( false == !! ((expr)) ){ \
-	perror( "\n" __FILE__ "(" _CRT_STRINGIZE(__LINE__)  ")\nExpression: " #expr "\nSystem error: ") ; \
-	exit(0);   } \
-} while(0)
-
-
-
-/// -------------------------------------------------------------------------------
-/// be advised: static_assert is C11 macro 
-/// https://en.cppreference.com/w/c/error/static_assert
-#undef DBJ_UNUSED
-#define DBJ_UNUSED(...) static_assert((__VA_ARGS__, true), #__VA_ARGS__)
-
+#include <errno.h>
 
 /// -------------------------------------------------------------------------------
 /// https://stackoverflow.com/a/29253284/10870835
 
 #if (!defined(_DEBUG)) && (!defined(NDEBUG))
-#error NDEBUG *is* standard macro and has to exist.
+#error NDEBUG *is* standard macro and has to exist in RELEASE builds
 #endif
 
 #undef DBJ_RELEASE_BUILD
 #ifdef NDEBUG
 #define DBJ_RELEASE_BUILD
 #endif
-
-/// -------------------------------------------------------------------------------
-
-#undef DBJ_PERROR
-#ifndef NDEBUG
-#define DBJ_PERROR (perror(__FILE__ " # " _CRT_STRINGIZE(__LINE__)))
-#else
-#define DBJ_PERROR
-#endif // NDEBUG
-
-#undef DBJ_FERROR
-#ifdef _DEBUG
-#define DBJ_FERROR(FP_)       \
-	do                        \
-	{                         \
-		if (ferror(FP_) != 0) \
-		{                     \
-			DBJ_PERROR;       \
-			clearerr_s(FP_);  \
-		}                     \
-	} while (0)
-#else
-#define DBJ_FERROR(FP_)
-#endif // _DEBUG
-
-#undef DBJ_FAST_FAIL
-#ifndef NDEBUG
-#define DBJ_FAST_FAIL       \
-	do                      \
-	{                       \
-		DBJ_PERROR;         \
-		exit(EXIT_FAILURE); \
-		__debugbreak();     \
-	} while (0)
-#else // !NDEBUG
-#define DBJ_FAST_FAIL       \
-	do                      \
-	{                       \
-		DBJ_PERROR;         \
-		exit(EXIT_FAILURE); \
-	} while (0)
-#endif // ! NDEBUG
 
 /// -------------------------------------------------------------------------------
 /// stolen from vcruntime.h
@@ -179,6 +117,51 @@ do { \
 
 #define _DBJ_EXPAND_(s) s
 #define _DBJ_EXPAND(s) _DBJ_EXPAND_(s)
+
+#undef MIN
+#define MIN(a,b) (((b) < (a)) ? (b) : (a))
+
+// https://stackoverflow.com/a/19453814/10870835
+// it raises an error when the argument is not an array (or a pointer)
+// error: subscripted value is neither array nor pointer nor vector
+#undef IS_INDEXABLE
+#define IS_INDEXABLE(arg) (sizeof(arg[0]))
+
+// The legend says this is from some GOOGLE project, perhaps called "Chromium"?
+// basically use any macro you fancy, as long as it works better
+// in any case COUNT_OF should not compile
+// id A and B are not array literals
+#undef COUNT_OF
+#define COUNT_OF(x) ((sizeof(x)/sizeof(0[x])) / ((size_t)(!(sizeof(x) % sizeof(0[x])))))
+
+#undef DBJ_EMPTY_STMNT
+#define DBJ_EMPTY_STMNT do { } while(0)
+
+#undef DBJ_ASSERT
+// #define DBJ_ASSERT _ASSERTE
+#define DBJ_ASSERT( expression, message ) _ASSERTE( ( expression ) && ( message ) )
+
+// moved to cdebug.h
+// #undef  DBJ_VERIFY
+// #define DBJ_VERIFY(expr) \
+// do { \
+// 	if ( false == !! ((expr)) ){ \
+// 	perror( "\n" __FILE__ "(" _CRT_STRINGIZE(__LINE__)  ")\nExpression: " #expr "\nSystem error: ") ; \
+// 	exit(0);   } \
+// } while(0)
+
+/// -------------------------------------------------------------------------------
+/// be advised: static_assert is C11 macro 
+/// https://en.cppreference.com/w/c/error/static_assert
+#undef DBJ_UNUSED
+/// #define DBJ_UNUSED(...) static_assert((__VA_ARGS__, true), #__VA_ARGS__)
+#define DBJ_UNUSED(...) GULP(__VA_ARGS__)
+
+// genius?
+#undef GULP
+#define GULP(...) (void)(0)
+
+/// -------------------------------------------------------------------------------
 
 #ifdef _MSVC_LANG
 // https://developercommunity.visualstudio.com/content/problem/195665/-line-cannot-be-used-as-an-argument-for-.html
@@ -208,6 +191,7 @@ timestamp included
 /*
 -----------------------------------------------------------------------------------------
 */
+DBJ_EXTERN_C_BEGIN
 
 // https://en.cppreference.com/w/c/error/static_assert
 #undef dbj_assert_static _Static_assert
@@ -226,25 +210,9 @@ timestamp included
 #define CHAR_LINE(CHAR_,LEN_) ( assert( LEN_ <= 0xFF), \
   (char const * const)memset(memset(alloca(LEN_+1), 0, LEN_+1), CHAR_, LEN_)) 
 
-/// -------------------------------------------------------------------------------
-DBJ_EXTERN_C_BEGIN
-enum DBJ_CAPI_SEMVER
-{
-	major = 0,
-	minor = 1,
-	patch = 0
-};
-// SEMVER + TIMESTAMP
- auto DBJ_CAPI_VERSION = "0.1.0 [" __DATE__ "]";
-
-DBJ_UNUSED(DBJ_CAPI_VERSION);
-
 ///	-----------------------------------------------------------------------------------------
-// compile time extremely precise PI approximation
-//
-//  https://en.wikipedia.org/wiki/Proof_that_22/7_exceeds_π
-// https://www.wired.com/story/a-major-proof-shows-how-to-approximate-numbers-like-pi/
-enum { DBJ_PI = 104348 / 33215 } ;
+/// compile time extremely precise PI approximation
+#define DBJ_PI 355 / 113
 
 
 // the fallacy of the zstring leads to this
@@ -252,13 +220,20 @@ enum { DBJ_PI = 104348 / 33215 } ;
 // existence of '\0'
  inline bool is_empty(const char* text) 
 {
-	return text == nullptr || *text == '\0';
+	return text == 0 || *text == '\0';
 }
 
  inline bool wis_empty(const wchar_t* text) 
 {
-	return text == nullptr || *text == L'\0';
+	return text == 0 || *text == L'\0';
 }
+
+// void __fastfail(unsigned int code);
+// FAST_FAIL_<description> symbolic constant from winnt.h or wdm.h that indicates the reason for process termination.
+// #include <winnt.h>
+void __fastfail(unsigned int);
+#undef DBJ_FAST_FAIL
+#define DBJ_FAST_FAIL __fastfail(7)
 
 DBJ_EXTERN_C_END
 

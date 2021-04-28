@@ -6,7 +6,7 @@
 once and for all ... what is matrix in C
 
 note: going beyond this means repeating what is alreasy done elsewhere
-for example 
+for example here:
 
 - https://github.com/nothings/stb
 - https://github.com/troydhanson/uthash
@@ -19,7 +19,7 @@ etc...
 #include <stdio.h>
 #include <stdlib.h>
 
-// underlying mamory model has only 1D arrays
+// underlying memory model has only 1D arrays
 // in C matrix is "array of arrays"
 // does not have to be "square"
 enum { dbj_c_matrix_sampler_R = 0xFF, dbj_c_matrix_sampler_C = R };
