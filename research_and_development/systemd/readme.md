@@ -1,0 +1,1 @@
+Gemstones nicked from https://github.com/systemd/systemd/tree/main/src/basic
