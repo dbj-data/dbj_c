@@ -2,6 +2,7 @@
 #ifndef __NANO_PRINTF__INC__
 #define __NANO_PRINTF__INC__
 
+#include <crtdbg.h>
 #include <stdarg.h>
 #include <stddef.h>
 
@@ -17,38 +18,43 @@
 
 #endif // DBJ_THREADLOCAL
 
-extern "C" {
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 #define PRINTF_LONG_SUPPORT
 
-    typedef void (*putcf) (void*, char);
+    typedef void (*putcf)(void *, char);
 
     // GCC thread_local macro
     static DBJ_THREADLOCAL putcf stdout_putf;
-    static DBJ_THREADLOCAL void* stdout_putp;
+    static DBJ_THREADLOCAL void *stdout_putp;
 
-	void nano_init_printf(void* putp, void (*putf) (void*, char));
-    void nano_printf(const char* fmt, ...);
-	void nano_sprintf(char* s, const char* fmt, ...);
-    void nano_format(void* putp, putcf putf, const char* fmt, va_list va);
+    void nano_init_printf(void *putp, void (*putf)(void *, char));
+    void nano_printf(const char *fmt, ...);
+    void nano_sprintf(char *s, const char *fmt, ...);
+    void nano_format(void *putp, putcf putf, const char *fmt, va_list va);
 
-	/*
+    /*
 	*******************************************************************************
 	*/
 
 #ifdef PRINTF_LONG_SUPPORT
 
-    inline void uli2a(unsigned long int num, unsigned int base, int uc, char* bf)
+    inline void uli2a(unsigned long int num, unsigned int base, int uc, char *bf)
     {
         int n = 0;
         unsigned int d = 1;
         while (num / d >= base)
             d *= base;
-        while (d != 0) {
+        while (d != 0)
+        {
             int dgt = num / d;
             num %= d;
             d /= base;
-            if (n || dgt > 0 || d == 0) {
+            if (n || dgt > 0 || d == 0)
+            {
                 *bf++ = (char)(dgt + (dgt < 10 ? '0' : (uc ? 'A' : 'a') - 10));
                 ++n;
             }
@@ -56,9 +62,10 @@ extern "C" {
         *bf = 0;
     }
 
-    inline void li2a(long num, char* bf)
+    inline void li2a(long num, char *bf)
     {
-        if (num < 0) {
+        if (num < 0)
+        {
             num = -num;
             *bf++ = '-';
         }
@@ -67,17 +74,19 @@ extern "C" {
 
 #endif
 
-    inline void ui2a(unsigned int num, unsigned int base, int uc, char* bf)
+    inline void ui2a(unsigned int num, unsigned int base, int uc, char *bf)
     {
         int n = 0;
         unsigned int d = 1;
         while (num / d >= base)
             d *= base;
-        while (d != 0) {
+        while (d != 0)
+        {
             int dgt = num / d;
             num %= d;
             d /= base;
-            if (n || dgt > 0 || d == 0) {
+            if (n || dgt > 0 || d == 0)
+            {
                 *bf++ = (char)(dgt + (dgt < 10 ? '0' : (uc ? 'A' : 'a') - 10));
                 ++n;
             }
@@ -85,9 +94,10 @@ extern "C" {
         *bf = 0;
     }
 
-    inline void i2a(int num, char* bf)
+    inline void i2a(int num, char *bf)
     {
-        if (num < 0) {
+        if (num < 0)
+        {
             num = -num;
             *bf++ = '-';
         }
@@ -102,16 +112,19 @@ extern "C" {
             return ch - 'a' + 10;
         else if (ch >= 'A' && ch <= 'F')
             return ch - 'A' + 10;
-        else return -1;
+        else
+            return -1;
     }
 
-    inline char a2i(char ch, const char** src, int base, int* nump)
+    inline char a2i(char ch, const char **src, int base, int *nump)
     {
-        const char* p = *src;
+        const char *p = *src;
         int num = 0;
         int digit;
-        while ((digit = a2d(ch)) >= 0) {
-            if (digit > base) break;
+        while ((digit = a2d(ch)) >= 0)
+        {
+            if (digit > base)
+                break;
             num = num * base + digit;
             ch = *p++;
         }
@@ -120,11 +133,11 @@ extern "C" {
         return ch;
     }
 
-    inline void putchw(void* putp, putcf putf, int n, char z, char* bf)
+    inline void putchw(void *putp, putcf putf, int n, char z, char *bf)
     {
         char fc = z ? '0' : ' ';
         char ch;
-        char* p = bf;
+        char *p = bf;
         while (*p++ && n > 0)
             n--;
         while (n-- > 0)
@@ -133,40 +146,47 @@ extern "C" {
             putf(putp, ch);
     }
 
-    inline void nano_format(void* putp, putcf putf, const char* fmt, va_list va)
+    inline void nano_format(void *putp, putcf putf, const char *fmt, va_list va)
     {
         _ASSERTE(putf);
         char bf[24];
         char ch;
 
-        while ((ch = *(fmt++))) {
+        while ((ch = *(fmt++)))
+        {
             if (ch != '%')
                 putf(putp, ch);
-            else {
+            else
+            {
                 char lz = 0;
-#ifdef  PRINTF_LONG_SUPPORT
+#ifdef PRINTF_LONG_SUPPORT
                 char lng = 0;
 #endif
                 int w = 0;
                 ch = *(fmt++);
-                if (ch == '0') {
+                if (ch == '0')
+                {
                     ch = *(fmt++);
                     lz = 1;
                 }
-                if (ch >= '0' && ch <= '9') {
+                if (ch >= '0' && ch <= '9')
+                {
                     ch = a2i(ch, &fmt, 10, &w);
                 }
-#ifdef  PRINTF_LONG_SUPPORT
-                if (ch == 'l') {
+#ifdef PRINTF_LONG_SUPPORT
+                if (ch == 'l')
+                {
                     ch = *(fmt++);
                     lng = 1;
                 }
 #endif
-                switch (ch) {
+                switch (ch)
+                {
                 case 0:
                     goto abort;
-                case 'u': {
-#ifdef  PRINTF_LONG_SUPPORT
+                case 'u':
+                {
+#ifdef PRINTF_LONG_SUPPORT
                     if (lng)
                         uli2a(va_arg(va, unsigned long int), 10, 0, bf);
                     else
@@ -175,8 +195,9 @@ extern "C" {
                     putchw(putp, putf, w, lz, bf);
                     break;
                 }
-                case 'd': {
-#ifdef  PRINTF_LONG_SUPPORT
+                case 'd':
+                {
+#ifdef PRINTF_LONG_SUPPORT
                     if (lng)
                         li2a(va_arg(va, unsigned long int), bf);
                     else
@@ -185,8 +206,9 @@ extern "C" {
                     putchw(putp, putf, w, lz, bf);
                     break;
                 }
-                case 'x': case 'X':
-#ifdef  PRINTF_LONG_SUPPORT
+                case 'x':
+                case 'X':
+#ifdef PRINTF_LONG_SUPPORT
                     if (lng)
                         uli2a(va_arg(va, unsigned long int), 16, (ch == 'X'), bf);
                     else
@@ -201,11 +223,11 @@ extern "C" {
 #ifdef WIN64
                     constexpr auto mask = 0xffffffff;
                     constexpr auto shift_size = 32;
-#else // WIN32
-                    constexpr auto mask = 0xffffffff;
-                    constexpr auto shift_size = 32;
+#else  // WIN32
+                constexpr auto mask = 0xffffffff;
+                constexpr auto shift_size = 32;
 #endif // WIN32
-                    size_t pointer = (size_t)va_arg(va, void*);
+                    size_t pointer = (size_t)va_arg(va, void *);
                     lz = 1;
                     w = 8;
                     if (sizeof(size_t) > 4)
@@ -221,7 +243,7 @@ extern "C" {
                     putf(putp, (char)(va_arg(va, int)));
                     break;
                 case 's':
-                    putchw(putp, putf, w, 0, va_arg(va, char*));
+                    putchw(putp, putf, w, 0, va_arg(va, char *));
                     break;
                 case '%':
                     putf(putp, ch);
@@ -233,14 +255,13 @@ extern "C" {
     abort:;
     }
 
-
-    inline void nano_init_printf(void* putp, void (*putf) (void*, char))
+    inline void nano_init_printf(void *putp, void (*putf)(void *, char))
     {
         stdout_putp = putp;
         stdout_putf = putf;
     }
 
-    inline void nano_printf(const char* fmt, ...)
+    inline void nano_printf(const char *fmt, ...)
     {
         va_list va;
         va_start(va, fmt);
@@ -248,12 +269,12 @@ extern "C" {
         va_end(va);
     }
 
-    inline void putcp(void* p, char c)
+    inline void putcp(void *p, char c)
     {
-        *(*((char**)p))++ = c;
+        *(*((char **)p))++ = c;
     }
 
-    inline void nano_sprintf(char* s, const char* fmt, ...)
+    inline void nano_sprintf(char *s, const char *fmt, ...)
     {
         va_list va;
         va_start(va, fmt);
@@ -262,8 +283,9 @@ extern "C" {
         va_end(va);
     }
 
+#ifdef __cplusplus
 } // "C"
-
+#endif
 
 /*
 2020 APR 11	DBJ	Transformed into single header C lib
@@ -370,4 +392,3 @@ regs Kusti, 23.10.2004
 */
 
 #endif // __NANO_PRINTF__INC__
-

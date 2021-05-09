@@ -9,78 +9,72 @@
 #include <iso646.h>
 #endif
 
-namespace dbj {
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
-// https://tinyurl.com/y5zhw5x3
-// in english: 8
-// malloc aligns on this boundary
-constexpr auto default_alignment = sizeof(double);
-
-#define mistery _HEAP_MAXREQ
 	/// ----------------------------------------------------------------------
 
 	// https://tinyurl.com/y5zhw5x3
 	// in english: 8
 	// malloc aligns on this boundary
-	constexpr auto default_alignment = sizeof(double);
+	enum { dbj_default_alignment = sizeof(double) } ;
 	/**
 	* Machine word size. Depending on the architecture,
 	* can be 4 or 8 bytes.
 	*/
-	using word_t = intptr_t;
+	typedef intptr_t dbj_word_t;
 	/// ----------------------------------------------------------------------
 	/**
 	 * Aligns the size by the machine word.
 	 http://dmitrysoshnikov.com/compilers/writing-a-memory-allocator/#memory-alignment
 	 */
-	constexpr inline size_t align(size_t n) noexcept {
-		return (n + sizeof(word_t) - 1) & ~(sizeof(word_t) - 1);
+	constexpr inline size_t dbj_align(size_t n) noexcept {
+		return (n + sizeof(dbj_word_t) - 1) & ~(sizeof(dbj_word_t) - 1);
 	}
 
 	/// ----------------------------------------------------------------------
-	inline bool is_aligned(void *ptr, size_t alignment) noexcept {
+	inline bool dbj_is_aligned(void *ptr, size_t alignment) noexcept {
 		if (((unsigned long long)ptr % alignment) == 0)
 			return true;
 		return false;
 	}
 
-	/// ----------------------------------------------------------------------
-	[[deprecated]]
-	inline void* aligned_malloc(size_t alignment, size_t size) noexcept
-	{
-		void* p;
-#ifdef _MSC_VER
-		p = _aligned_malloc(size, alignment);
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-		p = __mingw_aligned_malloc(size, alignment);
-#else
-		// somehow, if this is used before including "x86intrin.h", it creates an
-		// implicit defined warning.
-		if (posix_memalign(&p, alignment, size) != 0) {
-			return nullptr;
-		}
-#endif
-		return p;
-	}
+// 	/// ----------------------------------------------------------------------
+// 	[[deprecated]]
+// 	inline void* aligned_malloc(size_t alignment, size_t size) noexcept
+// 	{
+// 		void* p;
+// #ifdef _MSC_VER
+// 		p = _aligned_malloc(size, alignment);
+// #elif defined(__MINGW32__) || defined(__MINGW64__)
+// 		p = __mingw_aligned_malloc(size, alignment);
+// #else
+// 		// somehow, if this is used before including "x86intrin.h", it creates an
+// 		// implicit defined warning.
+// 		if (posix_memalign(&p, alignment, size) != 0) {
+// 			return nullptr;
+// 		}
+// #endif
+// 		return p;
+// 	}
 
-	/// ----------------------------------------------------------------------
-	[[deprecated]]
-	inline void aligned_free(void* mem_block) noexcept {
-		if (mem_block == nullptr) {
-			return;
-		}
-#ifdef _MSC_VER
-		_aligned_free(mem_block);
-#elif defined(__MINGW32__) || defined(__MINGW64__)
-		__mingw_aligned_free(mem_block);
-#else
-		free(mem_block);
-#endif
-	}
+// 	/// ----------------------------------------------------------------------
+// 	[[deprecated]]
+// 	inline void aligned_free(void* mem_block) noexcept {
+// 		if (mem_block == nullptr) {
+// 			return;
+// 		}
+// #ifdef _MSC_VER
+// 		_aligned_free(mem_block);
+// #elif defined(__MINGW32__) || defined(__MINGW64__)
+// 		__mingw_aligned_free(mem_block);
+// #else
+// 		free(mem_block);
+// #endif
+// 	}
 
-
-// NOTE! there is not MT resilience in here!
-namespace detail {
 
 	//  int posix_memalign(void **memptr, size_t alignment, size_t size);
 	// we use Strong types concept
@@ -104,7 +98,7 @@ namespace detail {
 		return erc;
 	}
 
-	inline int dbj_free(void* p) noexcept
+	inline int dbj_aligned_free(void* p) noexcept
 	{
 		int erc = 0;
 		_set_errno(0);
@@ -118,7 +112,6 @@ namespace detail {
 		p = NULL;
 		return erc;
 	}
-} // detail ns
 
 #ifdef TEST_MALLOC_ALIGNED
 
@@ -146,16 +139,15 @@ inline int test_malloc_aligned() noexcept
     printf("\nis %3zd byte aligned = %s", wrong_alignment, (((size_t)mem) % wrong_alignment) ? "no" : "yes");
     printf("\nis %3zd byte aligned = %s", alignment.val, (((size_t)mem) % alignment.val ) ? "no" : "yes");
 
-    dbj_free(mem);
+    dbj_aligned_free(mem);
 
     return EXIT_SUCCESS ;
 }
 
 #endif // TEST_MALLOC_ALIGNED
 
-} // dbj 
-
-
-#undef mistery
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif // DBJ_MEMALIGNED_INC
