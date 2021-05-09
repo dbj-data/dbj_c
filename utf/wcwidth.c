@@ -209,7 +209,7 @@ int dbj_wcwidth(char32_t ucs)
                 (ucs >= 0x30000 && ucs <= 0x3fffd)));
 }
 
-
+// wide string width
 int dbj_wcswidth(const char32_t* pwcs, size_t n)
 {
     int w, width = 0;
