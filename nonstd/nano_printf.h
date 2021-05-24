@@ -261,7 +261,7 @@ extern "C"
         }
     abort:;
         #undef mask
-        #unddef shift_size
+        #undef shift_size
     }
 
     inline void nano_init_printf(void *putp, void (*putf)(void *, char))
