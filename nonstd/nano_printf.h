@@ -49,7 +49,7 @@ extern "C"
 
 #ifdef PRINTF_LONG_SUPPORT
 
-    inline void uli2a(unsigned long int num, unsigned int base, int uc, char *bf)
+    static inline void uli2a(unsigned long int num, unsigned int base, int uc, char *bf)
     {
         int n = 0;
         unsigned int d = 1;
@@ -69,7 +69,7 @@ extern "C"
         *bf = 0;
     }
 
-    inline void li2a(long num, char *bf)
+    static inline void li2a(long num, char *bf)
     {
         if (num < 0)
         {
@@ -81,7 +81,7 @@ extern "C"
 
 #endif
 
-    inline void ui2a(unsigned int num, unsigned int base, int uc, char *bf)
+    static inline void ui2a(unsigned int num, unsigned int base, int uc, char *bf)
     {
         int n = 0;
         unsigned int d = 1;
@@ -101,7 +101,7 @@ extern "C"
         *bf = 0;
     }
 
-    inline void i2a(int num, char *bf)
+    static inline void i2a(int num, char *bf)
     {
         if (num < 0)
         {
@@ -111,7 +111,7 @@ extern "C"
         ui2a(num, 10, 0, bf);
     }
 
-    inline int a2d(char ch)
+    static inline int a2d(char ch)
     {
         if (ch >= '0' && ch <= '9')
             return ch - '0';
@@ -123,7 +123,7 @@ extern "C"
             return -1;
     }
 
-    inline char a2i(char ch, const char **src, int base, int *nump)
+    static inline char a2i(char ch, const char **src, int base, int *nump)
     {
         const char *p = *src;
         int num = 0;
@@ -140,7 +140,7 @@ extern "C"
         return ch;
     }
 
-    inline void putchw(void *putp, putcf putf, int n, char z, char *bf)
+    static inline void putchw(void *putp, putcf putf, int n, char z, char *bf)
     {
         char fc = z ? '0' : ' ';
         char ch;
@@ -153,7 +153,7 @@ extern "C"
             putf(putp, ch);
     }
 
-    inline void nano_format(void *putp, putcf putf, const char *fmt, va_list va)
+    static inline void nano_format(void *putp, putcf putf, const char *fmt, va_list va)
     {
         DBJ_ASSERT(putf);
         char bf[24];
@@ -264,13 +264,13 @@ extern "C"
         #undef shift_size
     }
 
-    inline void nano_init_printf(void *putp, void (*putf)(void *, char))
+    static inline void nano_init_printf(void *putp, void (*putf)(void *, char))
     {
         stdout_putp = putp;
         stdout_putf = putf;
     }
 
-    inline void nano_printf(const char *fmt, ...)
+    static inline void nano_printf(const char *fmt, ...)
     {
         va_list va;
         va_start(va, fmt);
@@ -278,12 +278,12 @@ extern "C"
         va_end(va);
     }
 
-    inline void putcp(void *p, char c)
+    static inline void putcp(void *p, char c)
     {
         *(*((char **)p))++ = c;
     }
 
-    inline void nano_sprintf(char *s, const char *fmt, ...)
+    static inline void nano_sprintf(char *s, const char *fmt, ...)
     {
         va_list va;
         va_start(va, fmt);
