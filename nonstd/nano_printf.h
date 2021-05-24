@@ -228,11 +228,11 @@ extern "C"
                   Print one or two lots of %x depending on sizeof(size_t) 
                   */
 #ifdef WIN64
-                    constexpr auto mask = 0xffffffff;
-                    constexpr auto shift_size = 32;
+                    #define mask 0xffffffff
+                    #define shift_size 32
 #else  // WIN32
-                constexpr auto mask = 0xffffffff;
-                constexpr auto shift_size = 32;
+                #define mask 0xffffffff
+                #define shift_size 32
 #endif // WIN32
                     size_t pointer = (size_t)va_arg(va, void *);
                     lz = 1;
@@ -260,6 +260,8 @@ extern "C"
             }
         }
     abort:;
+        #undef mask
+        #unddef shift_size
     }
 
     inline void nano_init_printf(void *putp, void (*putf)(void *, char))
