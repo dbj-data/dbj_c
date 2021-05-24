@@ -38,10 +38,10 @@ extern "C"
     static DBJ_THREADLOCAL putcf stdout_putf;
     static DBJ_THREADLOCAL void *stdout_putp;
 
-    void nano_init_printf(void *putp, void (*putf)(void *, char));
-    void nano_printf(const char *fmt, ...);
-    void nano_sprintf(char *s, const char *fmt, ...);
-    void nano_format(void *putp, putcf putf, const char *fmt, va_list va);
+    static void nano_init_printf(void *putp, void (*putf)(void *, char));
+    static void nano_printf(const char *fmt, ...);
+    static void nano_sprintf(char *s, const char *fmt, ...);
+    static void nano_format(void *putp, putcf putf, const char *fmt, va_list va);
 
     /*
 	*******************************************************************************
