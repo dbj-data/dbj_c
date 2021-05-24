@@ -1,4 +1,7 @@
+#ifdef _MSC_VER
 #pragma once
+#endif
+
 #ifndef __NANO_PRINTF__INC__
 #define __NANO_PRINTF__INC__
 
