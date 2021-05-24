@@ -155,7 +155,7 @@ extern "C"
 
     inline void nano_format(void *putp, putcf putf, const char *fmt, va_list va)
     {
-        DBJ_ASSERTE(putf);
+        DBJ_ASSERT(putf);
         char bf[24];
         char ch;
 
