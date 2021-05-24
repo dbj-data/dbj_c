@@ -2,7 +2,14 @@
 #ifndef __NANO_PRINTF__INC__
 #define __NANO_PRINTF__INC__
 
+#ifdef _MSC_VER
 #include <crtdbg.h>
+#define DBJ_ASSERT _ASSERTE
+#else
+#include <assert.h>
+#define DBJ_ASSERT assert
+#endif
+
 #include <stdarg.h>
 #include <stddef.h>
 
@@ -148,7 +155,7 @@ extern "C"
 
     inline void nano_format(void *putp, putcf putf, const char *fmt, va_list va)
     {
-        _ASSERTE(putf);
+        DBJ_ASSERTE(putf);
         char bf[24];
         char ch;
 
