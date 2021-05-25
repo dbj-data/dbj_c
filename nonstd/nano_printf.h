@@ -5,6 +5,8 @@
 #ifndef __NANO_PRINTF__INC__
 #define __NANO_PRINTF__INC__
 
+// CAUTION: ccomon.h has DBJ_ASSERT that requires 2 arguments
+#undef DBJ_ASSERT
 #ifdef _MSC_VER
 #include <crtdbg.h>
 #define DBJ_ASSERT _ASSERTE

@@ -132,9 +132,9 @@
 #undef DBJ_EMPTY_STMNT
 #define DBJ_EMPTY_STMNT do { } while(0)
 
-#undef DBJ_ASSERT
+#undef DBJ_REQUIRE
 // #define DBJ_ASSERT _ASSERTE
-#define DBJ_ASSERT( expression, message ) _ASSERTE( ( expression ) && ( message ) )
+#define DBJ_REQUIRE( expression, message ) _ASSERTE( ( expression ) && ( message ) )
 
 /// -------------------------------------------------------------------------------
 /// be advised: static_assert is C11 macro 
@@ -175,17 +175,12 @@ timestamp included
 #define DBJ_ERR_PROMPT(MSG_) DBJ_FILE_LINE_TSTAMP MSG_
 
 /*
------------------------------------------------------------------------------------------
-*/
-DBJ_EXTERN_C_BEGIN
-
-/*
-  there is no `repeat` in C
+  there is no `repeat` in C or C++
 
 	  DBJ_REPEAT(50){ printf("\n%d", dbj_repeat_counter_ ); }
 */
 #undef DBJ_REPEAT
-#define DBJ_REPEAT(N) for (size_t dbj_repeat_counter_ = 0; dbj_repeat_counter_ < static_cast<size_t>(N); ++dbj_repeat_counter_)
+#define DBJ_REPEAT(N) for (size_t dbj_repeat_counter_ = 0; dbj_repeat_counter_ < (size_t)(N); ++dbj_repeat_counter_)
 
 // WARNING: looks like a hack but it is not
 // repeats char without a loop
@@ -196,7 +191,6 @@ DBJ_EXTERN_C_BEGIN
 ///	-----------------------------------------------------------------------------------------
 /// compile time extremely precise PI approximation
 #define DBJ_PI 355 / 113
-
 
 // the fallacy of the zstring leads to this
 // we have no pointer and size, just the possibility of
@@ -227,6 +221,11 @@ void __fastfail(unsigned int);
 #define DBJ_FAST_FAIL exit(-1)
 #endif
 
+/*
+-----------------------------------------------------------------------------------------
+*/
+DBJ_EXTERN_C_BEGIN
+// AFAIK above is pure C ?
 DBJ_EXTERN_C_END
 
 
