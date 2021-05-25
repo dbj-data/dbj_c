@@ -9,6 +9,9 @@
    Thus feel free to peruse macros and things from vcruntime.h
 */
 
+// C programer? Stop. You must understand: 
+// https://man7.org/linux/man-pages/man7/feature_test_macros.7.html
+
 /// -------------------------------------------------------------------------------
 /// stolen from vcruntime.h
 #define _DBJ_STRINGIZE_(x) #x
@@ -83,6 +86,8 @@
 #ifdef __STDC_ALLOC_LIB__
 #define __STDC_WANT_LIB_EXT2__ 1
 #else
+// you must understand: 
+// https://man7.org/linux/man-pages/man7/feature_test_macros.7.html
 #define _POSIX_C_SOURCE 200809L
 #endif
 
