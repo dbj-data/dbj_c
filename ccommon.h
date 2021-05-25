@@ -133,7 +133,7 @@
 #define DBJ_EMPTY_STMNT do { } while(0)
 
 #undef DBJ_REQUIRE
-// #define DBJ_ASSERT _ASSERTE
+// DBJ_REQUIRE(n, "Argument n is required not to be null");
 #define DBJ_REQUIRE( expression, message ) _ASSERTE( ( expression ) && ( message ) )
 
 /// -------------------------------------------------------------------------------
