@@ -2,8 +2,13 @@
 #define DBJ_FIBO_FACT_IMPLEMENT
 #include "dbj_fibo_fact.h"
 
-int main(void)
+#include <stdio.h>
+
+#define TEST_BEGIN printf("test:%s(), file: %s, line:%d", __func__, __FILE__, __LINE__)
+
+static int test_fibo_facto(void)
 {
+    TEST_BEGIN ;
     // FIBONACCI
     {
         valstat_fibo vs = fibo( - 1 );
@@ -46,4 +51,9 @@ int main(void)
         assert(vs.value == 2432902008176640000);
     }
     return 0;
+}
+
+int main(void)
+{
+    test_fibo_facto();
 }

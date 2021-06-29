@@ -1,4 +1,6 @@
 /* 
+  https://godbolt.org/z/7vqTbo6sT
+  
    (c) by dbj at dbj dot org -- CC BY SA 3.0
 
    ps: concept is of course not mine, just the code
