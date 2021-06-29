@@ -490,4 +490,6 @@ static inline size_t size_add(size_t x, size_t y) {
         return y >= SIZE_MAX - x ? SIZE_MAX : x + y;
 }
 
+#ifdef DBJ_USES_SYSTEMD
 #include "log.h"
+#endif
