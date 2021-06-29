@@ -182,9 +182,6 @@ reminder:
 #define INT64_MAX        9223372036854775807i64
 */
 
-#define DBJ_FACT32_MAX_N 12U
-#define DBJ_FACT64_MAX_N 20U
-
 // declare the valstat type
 // status is POSIX error code
 typedef struct {
@@ -198,11 +195,13 @@ _const_ static int32_t factorials32[] = {
     1,    1,     2,      6,       24,       120,      720,
     5040, 40320, 362880, 3628800, 39916800, 479001600};
 
-_const_ valstat_fact fact32( int32_t i) {
-  if (i < 0U || i > DBJ_FACT32_MAX_N ) {
+#define DBJ_FACT32_MAX_N (sizeof(factorials32) / sizeof(factorials32[0])) - 1
+
+_const_ valstat_fact fact32( int32_t n) {
+  if ((n < 0U) || (n > DBJ_FACT32_MAX_N ) ) {
     return (valstat_fact){.status = EINVAL};
   }
-  return (valstat_fact){.value = factorials32[i]};
+  return (valstat_fact){.value = factorials32[n]};
 }
 #else // ! DBJ_FIBO_FACT_IMPLEMENT
 _const_ valstat_fact fact32( int32_t ) ;
@@ -240,8 +239,11 @@ _const_ static int64_t factorials64[] = {
     2432902008176640000 /*20!*/
 };
 
+#define DBJ_FACT64_MAX_N (sizeof(factorials64) / sizeof(factorials64[0])) - 1
+
+
 _const_ valstat_fact64 fact64(int64_t i) {
-  if (i < 0U || i > DBJ_FACT64_MAX_N ) {
+  if ((i < 0U) || (i > DBJ_FACT64_MAX_N) ) {
     return (valstat_fact64){.status = EINVAL};
   }
   return (valstat_fact64){.value = factorials64[i]};

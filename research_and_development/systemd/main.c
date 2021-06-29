@@ -14,7 +14,7 @@ int main(void)
         assert(vs.status == EINVAL);
     }
     {
-        valstat_fibo vs = fibo( fibo_table_size  - 1 );
+        valstat_fibo vs = fibo( fibo_max_n );
         assert(vs.status == 0);
         assert(vs.value == 754011380474634642);
     }
@@ -28,9 +28,22 @@ int main(void)
         assert(vs.status == EINVAL);
     }
     {
-        valstat_fact vs = fact32(12);
+        valstat_fact vs = fact32(DBJ_FACT32_MAX_N);
         assert(vs.status == 0);
         assert(vs.value == 479001600);
+    }
+    {
+        valstat_fact64 vs = fact64(-1);
+        assert(vs.status == EINVAL);
+    }
+    {
+        valstat_fact64 vs = fact64(DBJ_FACT64_MAX_N + 1);
+        assert(vs.status == EINVAL);
+    }
+    {
+        valstat_fact64 vs = fact64(DBJ_FACT64_MAX_N);
+        assert(vs.status == 0);
+        assert(vs.value == 2432902008176640000);
     }
     return 0;
 }
