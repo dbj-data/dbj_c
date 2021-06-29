@@ -44,10 +44,6 @@ int64 can hold fibonacci(N) up to N = 64
 we store the output into the table 0 .. 93 long = 94 elements
 */
 
-#define fibo_min_n 0
-#define fibo_max_n 94
-#define fibo_table_size 94
-
 // declare the valstat type
 // status is POSIX error code
 // we declare status == 0 as "empty" i.e. no status
@@ -59,7 +55,7 @@ typedef struct {
 
 #ifdef DBJ_FIBO_FACT_IMPLEMENT
 
-static _const_ int64_t fibo_table_64[fibo_table_size] = {1,
+static _const_ int64_t fibo_table_64[] = {1,
                                                          1,
                                                          1,
                                                          2,
@@ -153,11 +149,16 @@ static _const_ int64_t fibo_table_64[fibo_table_size] = {1,
                                                          4660046610375530309,
                                                          754011380474634642};
 
+// 94
+#define fibo_table_size (sizeof(fibo_table_64) / sizeof(fibo_table_64[0]))
+#define fibo_min_n 0
+#define fibo_max_n fibo_table_size - 1
+
 // the outcome is very safe and simple fibonacci
 _const_ valstat_fibo fibo(fibo_type n) {
-  if (n < 0 || (fibo_table_size <= n)) return (valstat_fibo){.status = EINVAL};
+  if ((n < 0) || (n > fibo_max_n) ) return (valstat_fibo){.status = EINVAL};
 
-  return (valstat_fibo){fibo_table_64[n], 0};  // signal OK
+  return (valstat_fibo){.value = fibo_table_64[n]};  // OK
 }
 #else // ! DBJ_FIBO_FACT_IMPLEMENT
 _const_ valstat_fibo fibo(fibo_type n) ;
