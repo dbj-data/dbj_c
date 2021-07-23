@@ -5,7 +5,7 @@
 //
 //
 //    #define RXI_VEC_IMPLEMENTATIN before including this header
-//    in EXACLTY ONE C file.
+//    in EXACTLY ONE C file.
 //
 //    comparing with STB dynamic array: https://godbolt.org/z/Yr1oG8dv9
 //

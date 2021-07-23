@@ -1,4 +1,6 @@
 
+#include "list.h"
+
 #define DBJ_FIBO_FACT_IMPLEMENT
 #include "dbj_fibo_fact.h"
 
@@ -6,7 +8,30 @@
 
 #define TEST_BEGIN printf("test:%s(), file: %s, line:%d", __func__, __FILE__, __LINE__)
 
-static int test_fibo_facto(void)
+/*
+------------------------------------------------------------------
+*/
+typedef struct {
+    
+    LIST_HEAD(int, head_);
+    LIST_FIELDS(int, node );
+
+    int data_ ;
+
+} intlist_node ;
+/* 
+------------------------------------------------------------------ 
+*/
+static void test_systemd_list(void)
+{
+    TEST_BEGIN ;
+
+    intlist_node * head = malloc(sizeof(intlist_node)) ;
+
+    LIST_INIT( node, head );
+}
+
+static void test_fibo_facto(void)
 {
     TEST_BEGIN ;
     // FIBONACCI
@@ -50,7 +75,6 @@ static int test_fibo_facto(void)
         assert(vs.status == 0);
         assert(vs.value == 2432902008176640000);
     }
-    return 0;
 }
 
 int main(void)
