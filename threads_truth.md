@@ -17,5 +17,5 @@ Threads memory footprint are precisely related to: memory page size
 call GetSystemInfo or better GetNativeSystemInfo and look for dwPageSize member of SYSTEM_INFO structure. however now under windows in both x86 and x64 page size is 0x1000 or 4Kb
 ```
 
-- ti be checked as a claim
+- this be checked as a claim?
   - When you add more RAM to your machine – you have the same number of bits that protects the memory so the granularity of the page tables goes up – you end up using (as an example) 64kB (aka 0xFFFF) for a thread you think is running in a few hundred bytes.
