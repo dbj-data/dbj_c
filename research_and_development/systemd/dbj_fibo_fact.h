@@ -166,12 +166,10 @@ _const_ valstat_fibo fibo(fibo_type n) {
 _const_ valstat_fibo fibo(fibo_type n) ;
 #endif // ! DBJ_FIBO_FACT_IMPLEMENT
 
-#ifdef __cplusplus
-// not a compile time constant
-// thus only C++ instant compile time test
+// C11 
 _const_ valstat_fibo vstat_ = fibo(93);
 static_assert(vstat_.status == 0, "OK: fibo(N), max N == 93 ");
-#endif  // __cplusplus
+
 
 /*
 the "clever" factorial is just a lookup,
