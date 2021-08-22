@@ -1,7 +1,7 @@
 #ifndef DBJ_COMMON_INC
 #define DBJ_COMMON_INC
 /*
-   (c) 2019-2020 by dbj.org   -- LICENSE DBJ -- https://dbj.org/license_dbj/
+   (c) 2019-2021 by dbj.org   -- LICENSE DBJ -- https://dbj.org/license_dbj/
 
    vcruntime.h
 
@@ -30,13 +30,13 @@
 #define MIN(a,b) (((b) < (a)) ? (b) : (a))
 
 
-#define DBJ_CAPI_SEMVER_MAJOR 0
-#define DBJ_CAPI_SEMVER_MINOR 1
-#define DBJ_CAPI_SEMVER_PATCH 0
+#define DBJ_CAPI_MAJOR 0
+#define DBJ_CAPI_MINOR 1
+#define DBJ_CAPI_PATCH 0
 // SEMVER + TIMESTAMP
 #define  DBJ_VERSION_(M,R,P) #M "." #R "." #P " [" __DATE__ "] "
 #define  DBJ_CAPI_VERSION_(M,R,P) DBJ_VERSION_(M,R,P)
-#define  DBJ_CAPI_VERSION() DBJ_CAPI_VERSION_( DBJ_CAPI_SEMVER_MAJOR, DBJ_CAPI_SEMVER_MINOR, DBJ_CAPI_SEMVER_PATCH)
+#define  DBJ_CAPI_VERSION() DBJ_CAPI_VERSION_( DBJ_CAPI_MAJOR, DBJ_CAPI_MINOR, DBJ_CAPI_PATCH)
 
 #if __STDC_VERSION__ < 201112L
 #error __STDC_VERSION__ has to exist and it has to be at least 201112L, aka C11
@@ -62,8 +62,12 @@
 #define		DBJ_EXTERN_C_BEGIN
 #define		DBJ_EXTERN_C_END
 #endif // !__cplusplus
+/*
+-----------------------------------------------------------------------------------------
+*/
+DBJ_EXTERN_C_BEGIN
 
-// requires not void return type
+// requires non void return type
 #if defined(__clang__)
 #define DBJ_PURE_FUNCTION __attribute__((const))
 #else
@@ -76,11 +80,8 @@
 *
  ... warning C4996 : 'strdup' : The POSIX name for this item is deprecated.Instead,
 	 use the ISO Cand C++ conformant name : _strdup.See online help for details.
-
 	 Thus:
-
 	 /wd4996
-
 	 must be added as a compiler CLI switch
 */
 #ifdef __STDC_ALLOC_LIB__
@@ -184,6 +185,7 @@ timestamp included
 
 // WARNING: looks like a hack but it is not
 // repeats char without a loop
+// requires no free
 // also alloca() should work on every compiler
 #define CHAR_LINE(CHAR_,LEN_) ( assert( LEN_ <= 0xFF), \
   (char const * const)memset(memset(alloca(LEN_+1), 0, LEN_+1), CHAR_, LEN_)) 
@@ -221,10 +223,7 @@ void __fastfail(unsigned int);
 #define DBJ_FAST_FAIL exit(-1)
 #endif
 
-/*
------------------------------------------------------------------------------------------
-*/
-DBJ_EXTERN_C_BEGIN
+
 // AFAIK above is pure C ?
 DBJ_EXTERN_C_END
 

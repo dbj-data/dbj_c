@@ -55,7 +55,7 @@ inline int adhoc_charr_arr_compare(void)
 {
 
 #if DBJ_USING_STRNCMP
-DBJ_PRINT("\nUsing strncmp() to compare char arrays\n");
+DBG_PRINT("\nUsing strncmp() to compare char arrays\n");
 #endif
 
 // abuse kicks the bucket

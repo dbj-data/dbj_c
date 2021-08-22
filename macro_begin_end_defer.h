@@ -1,7 +1,7 @@
 #ifndef macro_begin_end_defer_inc_
 #define macro_begin_end_defer_inc_
 
-#include "dbj_ccommon.h"
+#include "ccommon.h"
 
 /*
   first seen it here https://youtu.be/QpAhX-gsHMs
@@ -26,6 +26,9 @@
 #include <unistd.h> // readlink
 #endif
 
+// -----------------------------------------------------------------------------
+DBJ_EXTERN_C_BEGIN
+
 #define macro_concat_(a, b) a##b
 #define macro_concat(a, b) macro_concat_(a, b)
 #define macro_var(name) macro_concat(name, __LINE__)
@@ -39,6 +42,7 @@ static inline void do_nothing_(void) {}
 /*
  Ad-hoc demo
 */
+#ifdef macro_begin_end_defer_adhoc_demo
 #undef B
 #undef P
 #undef M
@@ -114,5 +118,10 @@ int macro_begin_end_defer_ad_hoc(void)
 #undef B
 #undef P
 #undef M
+
+#endif // macro_begin_end_defer_adhoc_demo
+
+// -----------------------------------------------------------------------------
+DBJ_EXTERN_C_END
 
 #endif macro_begin_end_defer_inc_

@@ -27,7 +27,7 @@ namespace dbj {
 	inline void last_perror(char const* prompt = nullptr)
 	{
 		std::error_code ec(::GetLastError(), std::system_category());
-		DBJ_PRINT("\n\n%s\nLast WIN32 Error message: %s\n\n", (prompt ? prompt : ""), ec.message().c_str());
+		DBG_PRINT("\n\n%s\nLast WIN32 Error message: %s\n\n", (prompt ? prompt : ""), ec.message().c_str());
 		::SetLastError(0);
 	}
 
