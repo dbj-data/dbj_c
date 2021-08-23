@@ -10,7 +10,7 @@ thus no dependancies beside crt and win32
 #endif
 
 #include "ccommon.h"
-#include "win32/win32_console.h" // win_enable_vt_100_and_unicode
+#include <stdarg.h>
 
 // -----------------------------------------------------------------------------
 DBJ_EXTERN_C_BEGIN
@@ -18,13 +18,22 @@ DBJ_EXTERN_C_BEGIN
 #pragma region DBJ_OUTPUT_DBG_STRNG
 /// EXECUTIVE DECISION :) Only WIN code
 #ifdef _DEBUG
-  void DBJ_OUTPUT_DBG_STRNG(const char * lpszFormat, ...);
+  static inline void DBJ_OUTPUT_DBG_STRNG(const char * lpszFormat, ...);
 #else
   #define DBJ_OUTPUT_DBG_STRNG __noop
 #endif
 
+#ifndef OutputDebugString
+__declspec(dllimport) 
+void
+__stdcall
+OutputDebugStringA(
+    const char * const /*lpOutputString*/
+    );
+#endif // !OutputDebugString
+
 #ifdef _DEBUG
-void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
+static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 {
 	char buffy[1024] = {0} ;
 	int nBuf = 0 ;
@@ -47,7 +56,7 @@ void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 	terror == terminating error
 	NOTE: all the bets are of so no point of using some clever logging
 	*/
-inline void dbj_terror(const char *msg_, const char *file_, const int line_)
+static inline void dbj_terror(const char *msg_, const char *file_, const int line_)
 {
 	/// DBJ_ASSERT(msg_ && file_ && line_);
 	/// all the bets are of so no point of using some logging
@@ -59,7 +68,7 @@ inline void dbj_terror(const char *msg_, const char *file_, const int line_)
 2020 SEP 03 -- it turns out (again) we need to initialize WIN10 terminal
 to show us VT100 colours
 */
-inline bool dbj_win_vt100_initor_()
+static inline bool dbj_win_vt100_initor_()
 {
 	// yes this is a hack and yes this works
 	system(" ");

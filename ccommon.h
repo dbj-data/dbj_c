@@ -38,6 +38,8 @@
 #define  DBJ_CAPI_VERSION_(M,R,P) DBJ_VERSION_(M,R,P)
 #define  DBJ_CAPI_VERSION() DBJ_CAPI_VERSION_( DBJ_CAPI_MAJOR, DBJ_CAPI_MINOR, DBJ_CAPI_PATCH)
 
+#ifndef __cplusplus
+
 #if __STDC_VERSION__ < 201112L
 #error __STDC_VERSION__ has to exist and it has to be at least 201112L, aka C11
 #endif
@@ -45,6 +47,8 @@
 #ifdef  __STDC_NO_VLA__  // ! ( defined(__clang__)  || (__GNUC__))
 #error Sorry this code requires VL Types 
 #endif
+
+#endif // ! __cplusplus
 
 #ifdef __clang__
 #pragma clang system_header
@@ -197,20 +201,9 @@ timestamp included
 // the fallacy of the zstring leads to this
 // we have no pointer and size, just the possibility of
 // existence of '\0'
-DBJ_PURE_FUNCTION static inline bool is_empty(const char* const text)
-{
-	return text == 0 || *text == '\0';
-}
+#define dbjcapi_is_empty(text) (text == 0 || *text == '\0')
 
-static_assert(sizeof is_empty, "");
-
-DBJ_PURE_FUNCTION static inline bool wis_empty(const wchar_t* const text)
-{
-	return text == 0 || *text == L'\0';
-}
-
-static_assert(sizeof wis_empty, "");
-
+#define dbjcapi_wis_empty(text) (text == 0 || *text == L'\0')
 
 // void __fastfail(unsigned int code);
 // FAST_FAIL_<description> symbolic constant from winnt.h or wdm.h that indicates the reason for process termination.
