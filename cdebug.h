@@ -1,7 +1,7 @@
 
 #pragma once
 /*
-this is bottom line everything uses this 'thing'
+this is bottom line everything might use this
 thus no dependancies beside crt and win32
 */
 
@@ -48,15 +48,13 @@ static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 	va_end(args);
 }
 #endif
+
 #pragma endregion 
-
-
-
 /*
 	terror == terminating error
 	NOTE: all the bets are of so no point of using some clever logging
 	*/
-static inline void dbj_terror(const char *msg_, const char *file_, const int line_)
+static inline void dbj_capi_terror(const char *msg_, const char *file_, const int line_)
 {
 	/// DBJ_ASSERT(msg_ && file_ && line_);
 	/// all the bets are of so no point of using some logging
@@ -82,13 +80,14 @@ static inline bool dbj_win_vt100_initor_()
 
 	if (!rezult)
 	{
-		dbj_terror("win_enable_vt_100_and_unicode() failed!", __FILE__, __LINE__);
+		dbj_capi_terror("win_enable_vt_100_and_unicode() failed!", __FILE__, __LINE__);
 	}
 	return rezult;
 	#endif // 0
 };
 
 // DBJ: TODO: must think about this
+#if 0
 // basically this
 // should print only in debug builds
 		/* fprintf(stderr, __VA_ARGS__); */
@@ -103,12 +102,13 @@ static inline bool dbj_win_vt100_initor_()
 #define dbj_release_mode_build (1 == 1)
 #define dbj_stderr_print(format_string, ...) (void)format_string
 #endif
+#endif // 0
 
 // name DBG_PRINT  indicates there is NO release print from here
 // -----------------------------------------------------------------------------
 #undef DBG_PRINT
 #ifdef _DEBUG
-#define DBG_PRINT(...) dbj_stderr_print(__VA_ARGS__)
+#define DBG_PRINT(...) DBJ_OUTPUT_DBG_STRNG(__VA_ARGS__)
 #else
 #define DBG_PRINT(...) __noop
 #endif // ! _DEBUG
@@ -119,16 +119,14 @@ static inline bool dbj_win_vt100_initor_()
 
 #define DBJ_VERIFY_(x, file, line) \
 	if (false == x)                \
-	dbj_terror("Expression: " #x ", failed ", file, line)
+	dbj_capi_terror("Expression: " #x ", failed ", file, line)
 
 #define DBJ_VERIFY(x) DBJ_VERIFY_(x, __FILE__, __LINE__)
 
+// very often this is used in release builds on some
+// "impossible" error
 #undef DBJ_PERROR
-#ifndef NDEBUG
 #define DBJ_PERROR (perror(__FILE__ " # " _CRT_STRINGIZE(__LINE__)))
-#else
-#define DBJ_PERROR __noop
-#endif // NDEBUG
 
 #undef DBJ_FERROR
 #ifdef _DEBUG
