@@ -97,4 +97,4 @@ static inline void dbjcapi_redirector_off(void)
 
 // -----------------------------------------------------------------------------
 DBJ_EXTERN_C_END
-#endif DBJ_CAPI_DEFAULT_LOG
+#endif // DBJ_CAPI_DEFAULT_LOG

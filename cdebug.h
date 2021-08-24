@@ -144,15 +144,14 @@ static inline bool dbj_win_vt100_initor_()
 #endif // _DEBUG
 
 #undef DBJ_FAST_FAIL
-#ifndef NDEBUG
+#ifdef _DEBUG
 #define DBJ_FAST_FAIL       \
 	do                      \
 	{                       \
 		DBJ_PERROR;         \
-		exit(EXIT_FAILURE); \
 		__debugbreak();     \
 	} while (0)
-#else // !NDEBUG
+#else // !_DEBUG
 #define DBJ_FAST_FAIL       \
 	do                      \
 	{                       \
@@ -161,14 +160,14 @@ static inline bool dbj_win_vt100_initor_()
 	} while (0)
 #endif // ! NDEBUG
 
-// legacy fight
-#ifdef B
-#error Hey, B must not be hash defined here?!
-#endif // B
+// // legacy fight
+// #ifdef B
+// #error Hey, B must not be hash defined here?!
+// #endif // B
 
-#ifdef P
-#error Hey, P must not be hash defined here?!
-#endif // P
+// #ifdef P
+// #error Hey, P must not be hash defined here?!
+// #endif // P
 
 #undef DBJ_PP
 // pointer pretty print
