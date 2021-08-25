@@ -114,6 +114,9 @@ DBJ_EXTERN_C_BEGIN
 #define static_assert _Static_assert
 #endif  // static_assert
 
+#undef DBJ_ASSERT
+#define DBJ_ASSERT _ASSERTE
+
 /// -------------------------------------------------------------------------------
 /// https://stackoverflow.com/a/29253284/10870835
 
