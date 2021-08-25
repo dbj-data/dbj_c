@@ -15,7 +15,7 @@ DBJ_EXTERN_C_BEGIN
 /// might be to redirect stderr to a file
 /// https://stackoverflow.com/questions/14543443/in-c-how-do-you-redirect-stdin-stdout-stderr-to-files-when-making-an-execvp-or
 
-void dbj_default_log_function(const char *filename, long lineno, const char *format, ...);
+void dbjcapi_default_log_function(const char *filename, long lineno, const char *format, ...);
 
 typedef struct dbj_redirector_state dbj_redirector_state ;
 
@@ -32,7 +32,7 @@ void dbjcapi_redirector_off(void);
 #include <stdarg.h>
 /// --------------------------------------------------------------
 
-void dbj_default_log_function(const char *filename, long lineno, const char *format, ...)
+void dbjcapi_default_log_function(const char *filename, long lineno, const char *format, ...)
 {
     DBJ_ASSERT(filename && lineno && format);
 
@@ -83,7 +83,8 @@ __attribute__((constructor)) void dbjcapi_default_log_construct(void)
 
     if (is_stderr > 0)
     {
-        // console found
+        // console found, and a shamefull hack that works to kick-start VT100
+        system(" ");
     }
     else
     {
@@ -132,6 +133,7 @@ void dbjcapi_redirector_on(const char filename[static 1])
 
     fprintf(stderr, "\n\n");
     fprintf(stderr, "\n*****                                                                     *****");
+    fprintf(stderr, "\n*****  %s", filename);
     fprintf(stderr, "\n*****  LOG BEGIN                                                          *****");
     fprintf(stderr, "\n*****                                                                     *****");
     fprintf(stderr, "\n\nLocal time:%4d-%02d-%02d %02d:%02d:%02d\n\n", lt.wYear, lt.wMonth, lt.wDay, lt.wHour, lt.wMinute, lt.wSecond);

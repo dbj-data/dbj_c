@@ -1,5 +1,7 @@
 
 #pragma once
+#ifndef CDEBUG_INC_
+#define CDEBUG_INC_
 /*
 this is bottom line everything might use this
 thus no dependancies beside crt and win32
@@ -39,7 +41,7 @@ static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 	int nBuf = 0 ;
 	va_list args = 0;
 	va_start(args, format_);
-	nBuf = _vsnprintf(buffy, 512, format_, args);
+	nBuf = _vsnprintf(buffy, 1024, format_, args);
 	// _ASSERTE(nBuf > -1,"_vsnprintf() buffer overflow");
 	if (nBuf > -1)
 		OutputDebugStringA(buffy);
@@ -71,38 +73,7 @@ static inline bool dbj_win_vt100_initor_()
 	// yes this is a hack and yes this works
 	system(" ");
 	return true;
-
-	#if 0
-	// this can fail for various reasons
-	// key reason being we are in the app with no console
-	// TODO: do it on different thread
-	bool rezult = win_enable_vt_100_and_unicode();
-
-	if (!rezult)
-	{
-		dbj_capi_terror("win_enable_vt_100_and_unicode() failed!", __FILE__, __LINE__);
-	}
-	return rezult;
-	#endif // 0
 };
-
-// DBJ: TODO: must think about this
-#if 0
-// basically this
-// should print only in debug builds
-		/* fprintf(stderr, __VA_ARGS__); */
-#ifdef _DEBUG
-#define dbj_release_mode_build (1 == 0)
-#define dbj_stderr_print(...)         \
-	do                                \
-	{                                 \
-		DBJ_OUTPUT_DBG_STRNG(__VA_ARGS__); \
-	} while (0)
-#else
-#define dbj_release_mode_build (1 == 1)
-#define dbj_stderr_print(format_string, ...) (void)format_string
-#endif
-#endif // 0
 
 // name DBG_PRINT  indicates there is NO release print from here
 // -----------------------------------------------------------------------------
@@ -160,15 +131,6 @@ static inline bool dbj_win_vt100_initor_()
 	} while (0)
 #endif // ! NDEBUG
 
-// // legacy fight
-// #ifdef B
-// #error Hey, B must not be hash defined here?!
-// #endif // B
-
-// #ifdef P
-// #error Hey, P must not be hash defined here?!
-// #endif // P
-
 #undef DBJ_PP
 // pointer pretty print
 // using the advice as per https://stackoverflow.com/a/9053835/10870835
@@ -193,7 +155,7 @@ static inline bool dbj_win_vt100_initor_()
 #define DBJ_TF(a) (a ? "true" : "false")
 
 // make it a run-time affair
-inline void dbj_print_bool_result(const int line, const char *file, const char *expression, const bool result)
+static inline void dbj_print_bool_result(const int line, const char *file, const char *expression, const bool result)
 {
 	DBG_PRINT("\n%4d | %s | %16s : %s", line, file, expression, (result ? "true" : "false"));
 }
@@ -201,6 +163,6 @@ inline void dbj_print_bool_result(const int line, const char *file, const char *
 #undef PRINB
 #define PRINB(x) dbj_print_bool_result(__LINE__, __FILE__, (#x), (x))
 
-
-
 DBJ_EXTERN_C_END
+
+#endif // CDEBUG_INC_
