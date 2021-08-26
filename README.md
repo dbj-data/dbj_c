@@ -48,3 +48,7 @@ By that we mean
 Whenever and wherever possible we use them. Here is clang [Feature Checking Macros](https://clang.llvm.org/docs/LanguageExtensions.html#feature-checking-macros) section.
 
 We think this is probably the key feature of clang compiler. Please make sure you know and use them.
+
+---
+
+&copy; 2021 by dbj at dbj dot org  htpps://dbj.org/license_dbj
