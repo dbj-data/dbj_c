@@ -58,9 +58,9 @@ static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 	*/
 static inline void dbj_capi_terror(const char *msg_, const char *file_, const int line_)
 {
-	/// DBJ_ASSERT(msg_ && file_ && line_);
+	DBJ_ASSERT(msg_ && file_ && line_);
 	/// all the bets are of so no point of using some logging
-	DBJ_OUTPUT_DBG_STRNG(DBJ_ERR_PROMPT("\n\ndbj  Terminating error!"));
+	perror(DBJ_ERR_PROMPT("\n\ndbj  Terminating error!"));
 	exit(EXIT_FAILURE);
 }
 
