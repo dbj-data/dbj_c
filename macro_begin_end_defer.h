@@ -16,33 +16,56 @@
   defer( on_scope_end() ) { ... inside scope ... }
 
   Q: What might be good about this two macros? 
-  A: They work on any C/C++ version, using any compiler.
+  A: Beside being very usefull, yhey work on any C/C++ version, using any compiler.
      Both macros are for(){ } that loops once
 
      https://godbolt.org/z/6Y8Ys4dPo
+
+     Caveat Emptor! 
+
+     calling macros 'beingend' and 'defer' is risky and ready for a name clash
+     with who knows what on large projects.
+
+     but if you hysicaly partition inside compoents that risk is much smaller
+     see DBJCS aka DBJ Component System
 */
+
+// -----------------------------------------------------------------------------
+DBJ_EXTERN_C_BEGIN
+
+#undef macro_concat_
+#undef macro_concat
+
+#define macro_concat_(a, b) a##b
+#define macro_concat(a, b) macro_concat_(a, b)
+/*
+WARNING: this relies on the __LINE__ so using it only on the single line will produce 
+sa,e variable names
+*/
+#undef macro_var
+#define macro_var(name) macro_concat(name, __LINE__)
+
+/*
+WARNING! Keep this on one line otherwise the maco_var above will produce different names
+*/
+#undef beginend
+#define beginend(start, end) for (int macro_var(_i_) = (start, 0); !macro_var(_i_); (macro_var(_i_) += 1, end))
+
+// static inline void do_nothing_(void) {}
+// #define defer( at_scope_end ) beginend( __LINE__, at_scope_end )
+#undef defer
+#define defer(at_scope_end) for (int macro_var(_i_) = 0; !macro_var(_i_); (macro_var(_i_) += 1, at_scope_end))
+
+/*
+--------------------------------------------------------------------------------------------------
+ Ad-hoc demo
+*/
+#ifdef macro_begin_end_defer_adhoc_demo
 
 #ifdef __linux__
 #include <unistd.h> // readlink
 #endif
 
-// -----------------------------------------------------------------------------
-DBJ_EXTERN_C_BEGIN
-
-#define macro_concat_(a, b) a##b
-#define macro_concat(a, b) macro_concat_(a, b)
-#define macro_var(name) macro_concat(name, __LINE__)
-
-#define beginend(start, end) for (int macro_var(_i_) = (start, 0); !macro_var(_i_); (macro_var(_i_) += 1, end))
-
-static inline void do_nothing_(void) {}
-// #define defer( at_scope_end ) beginend( __LINE__, at_scope_end )
-#define defer(at_scope_end) for (int macro_var(_i_) = 0; !macro_var(_i_); (macro_var(_i_) += 1, at_scope_end))
-
-/*
- Ad-hoc demo
-*/
-#ifdef macro_begin_end_defer_adhoc_demo
 #undef B
 #undef P
 #undef M

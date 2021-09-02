@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.go": "go",
+        "*.hta": "html",
+        "macro_begin_end_defer.h": "c"
+    }
+}

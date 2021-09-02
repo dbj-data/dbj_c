@@ -190,12 +190,20 @@ timestamp included
 #undef DBJ_REPEAT
 #define DBJ_REPEAT(N) for (size_t dbj_repeat_counter_ = 0; dbj_repeat_counter_ < (size_t)(N); ++dbj_repeat_counter_)
 
+///	-----------------------------------------------------------------------------------------
 // WARNING: looks like a hack but it is not
 // repeats char without a loop
 // requires no free
 // also alloca() should work on every compiler
-#define CHAR_LINE(CHAR_,LEN_) ( assert( LEN_ <= 0xFF), \
+#define DBJ_CHAR_LINE(CHAR_,LEN_) ( assert( LEN_ <= 0xFF), \
   (char const * const)memset(memset(alloca(LEN_+1), 0, LEN_+1), CHAR_, LEN_)) 
+
+// wchar_t version is a bit more involved
+// because size of wide char is not 1
+  enum{ DBJ_WSZ = sizeof(wchar_t) } ;
+
+#define DBJ_WCHAR_LINE(CHAR_,LEN_) ( assert( LEN_ <= 0xFF), \
+  (wchar_t const * const)wmemset(wmemset(alloca((DBJ_WSZ * LEN_) + DBJ_WSZ ), L'\0', LEN_+1), CHAR_, LEN_)) 
 
 ///	-----------------------------------------------------------------------------------------
 /// compile time extremely precise PI approximation
