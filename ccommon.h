@@ -48,12 +48,18 @@
 #error Sorry this code requires VL Types 
 #endif
 
+// NOTE: C++ standard does not allow re-defining the name static_assert
+// it should be part of assert.h by C11 std or better
+#ifndef static_assert 
+#define static_assert _Static_assert
+#endif  // static_assert
+
 #endif // ! __cplusplus
 
 #ifdef __clang__
 #pragma clang system_header
 #else // ! __clang__
-#error please use clang-cl.exe as packed with Visual Studio 2019
+#error please use clang-cl.exe as packed with Visual Studio 2019; yes GCC should work but that has to be checked first...
 #endif
 
 #undef DBJ_EXTERN_C_BEGIN
@@ -66,8 +72,12 @@
 #define		DBJ_EXTERN_C_BEGIN
 #define		DBJ_EXTERN_C_END
 #endif // !__cplusplus
+
+
 /*
 -----------------------------------------------------------------------------------------
+NOTE: C++ compiler will not magically turn into C compiler inside extern "C" { } blocks
+thus C header only libs in C++ projects might not compile always
 */
 DBJ_EXTERN_C_BEGIN
 
@@ -91,7 +101,7 @@ DBJ_EXTERN_C_BEGIN
 #ifdef __STDC_ALLOC_LIB__
 #define __STDC_WANT_LIB_EXT2__ 1
 #else
-// you must understand: 
+// please STOP here; you must understand: 
 // https://man7.org/linux/man-pages/man7/feature_test_macros.7.html
 #define _POSIX_C_SOURCE 200809L
 #endif
@@ -99,6 +109,8 @@ DBJ_EXTERN_C_BEGIN
 #define __STDC_LIB_EXT1__
 #define __STDC_WANT_LIB_EXT1__ 1
 
+// this is comfortable for users but not 100% a good practice
+// never include more than you need
 #include <assert.h> // NDEBUG used here
 #include <time.h>
 #include <stdbool.h>
@@ -109,11 +121,6 @@ DBJ_EXTERN_C_BEGIN
 #include <stddef.h> /* size_t */
 #include <errno.h>
 
-// it should be part of assert.h by C11 std or better
-#ifndef static_assert 
-#define static_assert _Static_assert
-#endif  // static_assert
-
 #undef DBJ_ASSERT
 #define DBJ_ASSERT _ASSERTE
 
@@ -121,7 +128,7 @@ DBJ_EXTERN_C_BEGIN
 /// https://stackoverflow.com/a/29253284/10870835
 
 #if (!defined(_DEBUG)) && (!defined(NDEBUG))
-#error NDEBUG *is* standard macro and has to exist in RELEASE builds
+#error NDEBUG *is* a standard macro and has to exist in RELEASE builds
 #endif
 
 // https://stackoverflow.com/a/19453814/10870835
