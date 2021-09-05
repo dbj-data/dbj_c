@@ -3,7 +3,7 @@
 #define LINENOISE_CONVERT_INC
 
 /*
-   20201-MAY-09 -- dbj --- this has to be aligned with <uchar.h>
+   2021-MAY-09 -- dbj --- this has to be aligned with <uchar.h>
    
     Copyright 2020 dbj@dbj.org  -- turned into single header C lib
                                    inevitably some name clashes will
