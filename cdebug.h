@@ -59,8 +59,10 @@ static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 static inline void dbj_capi_terror(const char *msg_, const char *file_, const int line_)
 {
 	DBJ_ASSERT(msg_ && file_ && line_);
-	/// all the bets are of so no point of using some logging
-	perror(DBJ_ERR_PROMPT("\n\ndbj  Terminating error!"));
+	// all the bets are of sat this point
+	// thus not using some fancy logging
+	fputs(msg_, stderr) ;
+	perror(DBJ_ERR_PROMPT("\nTerminating error!\n"));
 	exit(EXIT_FAILURE);
 }
 
@@ -88,11 +90,12 @@ static inline bool dbj_win_vt100_initor_()
 #undef DBJ_VERIFY
 #undef DBJ_VERIFY_
 
+// x should be bool type here
 #define DBJ_VERIFY_(x, file, line) \
-	if (false == x)                \
+	if (false == (x))                \
 	dbj_capi_terror("Expression: " #x ", failed ", file, line)
 
-#define DBJ_VERIFY(x) DBJ_VERIFY_(x, __FILE__, __LINE__)
+#define DBJ_VERIFY(x) DBJ_VERIFY_((x), __FILE__, __LINE__)
 
 // very often this is used in release builds on some
 // "impossible" error
