@@ -92,7 +92,7 @@ static inline bool dbj_win_vt100_initor_()
 
 // x should be bool type here
 #define DBJ_VERIFY_(x, file, line) \
-	if (false == (x))                \
+	if (! (x) )                \
 	dbj_capi_terror("Expression: " #x ", failed ", file, line)
 
 #define DBJ_VERIFY(x) DBJ_VERIFY_((x), __FILE__, __LINE__)
