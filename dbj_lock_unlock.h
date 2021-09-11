@@ -37,26 +37,27 @@ void fun ( void)
     }
 }
  */
-    static inline void dbjcapi_function_lock_unlock(void) 
-    {                                                 
-        static  struct dbj_crit_sect_ {
-           bool initialized_and_entered_ ;
-            CRITICAL_SECTION CRITSECT_; 
-        } CS_ = { .initialized_and_entered_ = false } ;
+static inline void dbjcapi_function_lock_unlock(void)
+{
+    static struct dbj_crit_sect_
+    {
+        bool initialized_and_entered_;
+        CRITICAL_SECTION CRITSECT_;
+    } CS_ = {.initialized_and_entered_ = false};
 
-        if (! CS_.initialized_and_entered_)                                     
-        {                                             
-            InitializeCriticalSection(&CS_.CRITSECT_);          
-            EnterCriticalSection(&CS_.CRITSECT_);  
-            CS_.initialized_and_entered_ = true ;             
-        }                                             
-        else                                          
-        {                                             
-            LeaveCriticalSection(&CS_.CRITSECT_);               
-            DeleteCriticalSection(&CS_.CRITSECT_);              
-            CS_.initialized_and_entered_ = false ;
-        }                                             
+    if (!CS_.initialized_and_entered_)
+    {
+        InitializeCriticalSection(&CS_.CRITSECT_);
+        EnterCriticalSection(&CS_.CRITSECT_);
+        CS_.initialized_and_entered_ = true;
     }
+    else
+    {
+        LeaveCriticalSection(&CS_.CRITSECT_);
+        DeleteCriticalSection(&CS_.CRITSECT_);
+        CS_.initialized_and_entered_ = false;
+    }
+}
 /*
 declare and define a function for compilation unit level lock/unlock
 using this locking can be done only on the level of one compilation unit 
@@ -79,27 +80,29 @@ void fun ( void)
 }
 */
 
-    struct dbj_crit_sect_ {
-        bool initialized_and_entered_ ;
-        CRITICAL_SECTION CRITSECT_; 
-    } ;
+struct dbj_crit_sect_
+{
+    bool initialized_and_entered_;
+    CRITICAL_SECTION CRITSECT_;
+};
 
-    static inline void dbjcapi_unit_lock_unlock(dbj_crit_sect_ * crit_sect_ )                    
-    {      
-        DBJ_ASSERT(crit_sect_);                                                               ;
-        if (! crit_sect_->initialized_and_entered_)
-        {                                                                 
-            InitializeCriticalSection(&crit_sect_->CRITSECT_); 
-            EnterCriticalSection(&crit_sect_->CRITSECT_);  
-            crit_sect_->initialized_and_entered_ = true ;    
-        }                                                                 
-        else                                                              
-        {                                                                 
-            LeaveCriticalSection(&crit_sect_->CRITSECT_);      
-            DeleteCriticalSection(&crit_sect_->CRITSECT_);     
-            crit_sect_->initialized_and_entered_ = false ;    
-        }                                                                 
+static inline void dbjcapi_unit_lock_unlock(struct dbj_crit_sect_ *crit_sect_)
+{
+    DBJ_ASSERT(crit_sect_);
+    ;
+    if (!crit_sect_->initialized_and_entered_)
+    {
+        InitializeCriticalSection(&crit_sect_->CRITSECT_);
+        EnterCriticalSection(&crit_sect_->CRITSECT_);
+        crit_sect_->initialized_and_entered_ = true;
     }
+    else
+    {
+        LeaveCriticalSection(&crit_sect_->CRITSECT_);
+        DeleteCriticalSection(&crit_sect_->CRITSECT_);
+        crit_sect_->initialized_and_entered_ = false;
+    }
+}
 
 DBJ_EXTERN_C_END
 
