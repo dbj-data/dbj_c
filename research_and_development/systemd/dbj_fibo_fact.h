@@ -10,7 +10,7 @@
    #define DBJ_FIBO_FACT_IMPLEMENT
    #include <dbj_fibo_fact.h>
 
-   Elsewehre in the same project just include and use
+   Elsewhere in the same project just include and use
 */
 #include <assert.h>
 #include <errno.h>
@@ -173,7 +173,7 @@ static_assert(vstat_.status == 0, "OK: fibo(N), max N == 93 ");
 
 /*
 the "clever" factorial is just a lookup,
-since for 32bit int overflow happens for 13!
+since for 32bit int overflow happens for 13, already!
 
 fact values source: http://www.tsm-resources.com/alists/fact.html
 
