@@ -65,3 +65,27 @@ taken from github systemd repo
 #define thread_local __thread
 #endif
 #endif // ! thread_local
+
+/*
+-------------------------------------------------------------------------------------
+ from https://news.ycombinator.com/item?id=11305190
+
+ usage:
+
+ _autofree_ char *s1 = strdup("foo");
+
+ */
+#include <assert.h>
+
+extern void free (void*); // maybe ...
+
+#define _autofree_ __attribute((cleanup(dbjcapi_autofree_func_)))
+
+static inline void dbjcapi_autofree_func_(void *ptr_ptr) 
+{
+    assert(ptr_ptr);             // dbj@dbj.org
+    if (! ptr_ptr)  return ;     // added
+
+    void *ptr = * (void **) ptr_ptr;
+    free(ptr);
+}
