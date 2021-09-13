@@ -81,16 +81,16 @@ static const DBJ_STRING( str_global, 123 ) = {{"static const global dbj string"}
 
 #ifdef _MSC_VER
 // #ifdef __STDC_LIB_EXT1__
-#define DBJ_STRING_ASSIGN(STR_, S_)                                                     \
-    do                                                                                  \
-    {                                                                                   \
-        strncpy_s(STR_.data, DBJ_COUNT_OF(STR_.data), S_, DBJ_COUNT_OF(STR_.data) - 1); \
+#define DBJ_STRING_ASSIGN(STR_, S_)                                         \
+    do                                                                      \
+    {                                                                       \
+        strncpy_s(STR_.data, sizeof(STR_.data), S_, sizeof(STR_.data) - 1); \
     } while (0)
 #else
-#define DBJ_STRING_ASSIGN(STR_, S_)                          \
-    do                                                       \
-    {                                                        \
-        strncpy(STR_.data, S_, DBJ_COUNT_OF(STR_.data) - 1); \
+#define DBJ_STRING_ASSIGN(STR_, S_)                    \
+    do                                                 \
+    {                                                  \
+        strncpy(STR_.data, S_, sizeof(STR_.data) - 1); \
     } while (0)
 #endif
 
