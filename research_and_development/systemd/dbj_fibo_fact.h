@@ -3,6 +3,10 @@
 #error clang required
 #else
 #pragma clang system_header
+#define _const_ __attribute__((__const__))
+#define _pure_ __attribute__((__pure__))
+#define _unused_ __attribute__((__unused__))
+#define _cleanup_(x) __attribute__((__cleanup__(x)))
 #endif // __clang__
 /* 
   https://godbolt.org/z/7vqTbo6sT
@@ -30,10 +34,6 @@ extern "C"
 #endif // __cplusplus
 
   typedef int errno_t;
-#define _const_ __attribute__((__const__))
-#define _pure_ __attribute__((__pure__))
-#define _unused_ __attribute__((__unused__))
-#define _cleanup_(x) __attribute__((__cleanup__(x)))
 
   typedef int64_t fibo_type;
 
