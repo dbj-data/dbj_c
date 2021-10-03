@@ -2,33 +2,31 @@
 
 <h1> dbj_capi </h1>
 
-dbj specific C top level
+## dbj specific top level C
 
-The collection of top level C headers. Meaning they are or should be used in all of C and possibly C++ code. 
+The collection of top level standard C. Meaning: this is or should be used in all of C and possibly C++ code. 
 
 ## How to use
 
-- put the folder above on the path
-- eg f:/machine_wide
-- Include (for example) `#include <dbj_capi/ccommon.h> `
+- put the folder above this folder, on the path
+- eg  `f:/machine_wide` goes to  path
+  - were this is in `f:/machine_wide/dbj_capi`
+- Include as (for example) `#include <dbj_capi/ccommon.h> `
 
-## CAVEAT EMPTOR
+## NOTES
 
-### This code is [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) code.
-
-By that we mean 
-
-- Compile on Windows 10
-- Use the 64 bit clang-cl compiler (comes with Visual Studio 2019)
-  - cl.exe (aka MSVC) can not be used
-  - this is because MSVC is not [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) compiler.
+- This code is [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) code.
+- We work only on Windows 10
+  - Usig the 64 bit clang-cl compiler (comes with Visual Studio 2019)
+    - cl.exe (aka MSVC) can not be used
+    - this is because MSVC is not [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) compiler.
 - Why WIN32?
   - Windows is built on WIN32
-  - MS STL is based on WIN32 we are based on WIN32. And 
+    - MS STL is based on WIN32, thus all is based on WIN32 
   - WIN32 is ANSI C API.
-    - with some extensions but not the level of [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)
+    - with some extensions but not on the level of [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)
 
-## Which C?
+## Which C, exactly?
 
   **[standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)** with available clang/gcc extensions. 
   
@@ -43,7 +41,7 @@ By that we mean
     - [clang C Language Features](https://clang.llvm.org/docs/UsersManual.html#c-language-features)
     - top level of the [Clang 12 documentation](https://clang.llvm.org/docs/index.html).
 
-### Feature checking macros
+### Feature checking macros in standard C
 
 Whenever and wherever possible we use them. Here is clang [Feature Checking Macros](https://clang.llvm.org/docs/LanguageExtensions.html#feature-checking-macros) section.
 
