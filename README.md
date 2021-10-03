@@ -28,7 +28,7 @@ The collection of top level standard C. Meaning: this is or should be used in al
 
 ## Which C, exactly?
 
-  **[standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)** with available clang/gcc extensions. 
+  **[standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)** with all available clang/gcc extensions. 
   
   For an quick overview [please see here](https://stackoverflow.com/a/14737642/10870835).
 
