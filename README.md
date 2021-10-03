@@ -30,9 +30,23 @@ The collection of top level standard C. Meaning: this is or should be used in al
 
   **[standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)** with all available clang/gcc extensions. 
   
-  For an quick overview [please see here](https://stackoverflow.com/a/14737642/10870835).
+For standard conformance, use any of the following:
+```c
+-std=c90 -pedantic
+-std=c99 -pedantic
+-std=c11 -pedantic
+```
+One can use `C17`,`c18`,`c2x` or whatever. `c11` is still the standard 2021 Q4.
 
-### What about GCC?
+C11 was issued by ISO in 2011. There has been one Technical Corrigendum, fixing the definitions of `__STDC_VERSION__` and `__STDC_LIB_EXT1__`.
+
+> ANSI did not issue its own versions of the 1999 or 2011 standards, adopting the ISO standards instead.
+
+  For an deeper view [please see here](https://stackoverflow.com/a/14737642/10870835).
+
+  From the [Gandalf](https://stackoverflow.com/users/827263/keith-thompson), himself.
+
+## What about GCC?
 
   From the clang standard C programs point of view, is it clang or GCC most of the time is irrelevant. clang tries to be compatible with gcc as much as possible, but some gcc extensions are not implemented yet.
 
