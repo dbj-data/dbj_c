@@ -16,8 +16,8 @@
   defer( on_scope_end() ) { ... inside scope ... }
 
   Q: What might be good about this two macros? 
-  A: Beside being very usefull, yhey work on any C/C++ version, using any compiler.
-     Both macros are for(){ } that loops once
+  A: Beside being very usefull, they work on any C/C++ version, using any compiler.
+     Both macros are for(){ }; that loops once
 
      https://godbolt.org/z/6Y8Ys4dPo
 
@@ -26,8 +26,8 @@
      calling macros 'beingend' and 'defer' is risky and ready for a name clash
      with who knows what on large projects.
 
-     but if you hysicaly partition inside compoents that risk is much smaller
-     see DBJCS aka DBJ Component System
+     but if you are physicaly partition inside components that risk 
+     is much smaller. See DBJCS aka DBJ Component System
 */
 
 // -----------------------------------------------------------------------------
@@ -40,7 +40,7 @@ DBJ_EXTERN_C_BEGIN
 #define macro_concat(a, b) macro_concat_(a, b)
 /*
 WARNING: this relies on the __LINE__ so using it only on the single line will produce 
-sa,e variable names
+same variable names after it, otherwise not, so keep this on one line
 */
 #undef macro_var
 #define macro_var(name) macro_concat(name, __LINE__)
