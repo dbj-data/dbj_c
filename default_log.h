@@ -1,5 +1,8 @@
 #ifndef DBJ_CAPI_DEFAULT_LOG
 #define DBJ_CAPI_DEFAULT_LOG
+
+#if 0 // TBD
+
 // (c) 2021 by dbj@dbj.org https://dbj.org/license_dbj
 //
 // #define DBJ_CAPI_DEFAULT_LOG_IMPLEMENTATION , in one place exactly
@@ -17,7 +20,7 @@ DBJ_EXTERN_C_BEGIN
 
 void dbjcapi_default_log_function(const char *filename, long lineno, const char *format, ...);
 
-typedef struct dbj_redirector_state dbj_redirector_state ;
+typedef struct dbj_redirector_state dbj_redirector_state;
 
 dbj_redirector_state *dbj_redirector_state_(void);
 void dbjcapi_redirector_on(const char[static 1] /*log file name*/);
@@ -32,9 +35,21 @@ void dbjcapi_redirector_off(void);
 #include <stdarg.h>
 /// --------------------------------------------------------------
 
+typedef enum dbjcapi_default_log_state_
+{
+    dbjcapi_default_log_noninitialized,
+    dbjcapi_default_log_constructed,
+    dbjcapi_default_log_destructed
+} dbjcapi_default_log_state;
+
+dbjcapi_default_log_state dbjcapi_default_log_state_ = dbjcapi_default_log_noninitialized;
+
 void dbjcapi_default_log_function(const char *filename, long lineno, const char *format, ...)
 {
     DBJ_ASSERT(filename && lineno && format);
+
+    if (dbjcapi_default_log_state_ != dbjcapi_default_log_constructed)
+        return;
 
 #ifdef _DEBUG
     if (_isatty(_fileno(stderr)) > 0)
@@ -61,23 +76,30 @@ struct dbj_redirector_state
     int fd;
     fpos_t pos;
     FILE *stream;
-} ;
+};
 
 __attribute__((destructor)) void dbjcapi_default_log_destruct(void)
 {
-    volatile const int is_stderr = _isatty(_fileno(stderr));
-    if (is_stderr > 0)
+    if (dbjcapi_default_log_state_ == dbjcapi_default_log_destructed)
+        return;
+
+    if (_isatty(_fileno(stderr)) != 0)
     {
-        // console found
+        // we are on console
     }
     else
     {
         dbjcapi_redirector_off();
     }
+
+    dbjcapi_default_log_state_ = dbjcapi_default_log_destructed;
 }
 // if no console do the stderr redirection on the startup
 __attribute__((constructor)) void dbjcapi_default_log_construct(void)
 {
+    if (dbjcapi_default_log_state_ == dbjcapi_default_log_constructed)
+        return;
+
     // volatile const int is_stdout = _isatty(_fileno(stdout));
     volatile const int is_stderr = _isatty(_fileno(stderr));
 
@@ -94,12 +116,13 @@ __attribute__((constructor)) void dbjcapi_default_log_construct(void)
         // win32 required here
         int rez = GetModuleFileNameA(
             NULL, app_full_path, DBJ_DEFAULT_LOG_BUFSIZ);
-            DBJ_ASSERT(rez != 0);
+        DBJ_ASSERT(rez != 0);
         char app_log_path[DBJ_DEFAULT_LOG_BUFSIZ] = {0};
         rez = _snprintf(app_log_path, 1024, "%s%s", app_full_path, DBJ_CAPI_DEFAULT_LOG_EXTENSION);
-            DBJ_ASSERT(rez > 0);
+        DBJ_ASSERT(rez > 0);
         dbjcapi_redirector_on(app_log_path);
     } // else
+    dbjcapi_default_log_state_ = dbjcapi_default_log_constructed;
 }
 
 /// -----------------------------------------------------
@@ -115,6 +138,9 @@ dbj_redirector_state *dbj_redirector_state_(void)
 
 void dbjcapi_redirector_on(const char filename[static 1])
 {
+    // otherwise we are on console and stderr can not be redirected
+    DBJ_ASSERT(0 == _isatty(_fileno(stderr)));
+
     dbj_redirector_state *state = dbj_redirector_state_();
 
     if (state->redirected)
@@ -142,21 +168,24 @@ void dbjcapi_redirector_on(const char filename[static 1])
 /// if you do this too soon printing to redirected
 /// stderr might not outpout to file but to
 /// non existent console
-/// best just leave it to the OS to reset the stderr
 void dbjcapi_redirector_off(void)
 {
-#if 0
-		fflush(stderr);
-		int dup2_rezult_ = _dup2(fd, _fileno(stderr));
-		_close(fd);
-		clearerr(stderr);
-		fsetpos(stderr, &pos);
-#endif
+    dbj_redirector_state *state = dbj_redirector_state_();
+
+    // otherwise we are on console and stderr can not be re-redirected
+    DBJ_ASSERT(0 == _isatty(_fileno(stderr)));
+
+    fflush(stderr);
+    int dup2_rezult_ = _dup2(state->fd, _fileno(stderr));
+    _close(state->fd);
+    clearerr(stderr);
+    fsetpos(stderr, &state->pos);
 }
 
 #endif // DBJ_CAPI_DEFAULT_LOG_IMPLEMENTATION
 // -----------------------------------------------------------------------------
 DBJ_EXTERN_C_END
 
+#endif 0 // TBD
 
 #endif // DBJ_CAPI_DEFAULT_LOG

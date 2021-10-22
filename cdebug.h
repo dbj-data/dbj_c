@@ -20,25 +20,22 @@ DBJ_EXTERN_C_BEGIN
 #pragma region DBJ_OUTPUT_DBG_STRNG
 /// EXECUTIVE DECISION :) Only WIN code
 #ifdef _DEBUG
-  static inline void DBJ_OUTPUT_DBG_STRNG(const char * lpszFormat, ...);
+static inline void DBJ_OUTPUT_DBG_STRNG(const char *lpszFormat, ...);
 #else
-  #define DBJ_OUTPUT_DBG_STRNG __noop
+#define DBJ_OUTPUT_DBG_STRNG __noop
 #endif
 
 #ifndef OutputDebugString
-__declspec(dllimport) 
-void
-__stdcall
-OutputDebugStringA(
-    const char * const /*lpOutputString*/
-    );
+__declspec(dllimport) void __stdcall OutputDebugStringA(
+	const char *const /*lpOutputString*/
+);
 #endif // !OutputDebugString
 
 #ifdef _DEBUG
-static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
+static inline void DBJ_OUTPUT_DBG_STRNG(const char *format_, ...)
 {
-	char buffy[1024] = {0} ;
-	int nBuf = 0 ;
+	char buffy[1024] = {0};
+	int nBuf = 0;
 	va_list args = 0;
 	va_start(args, format_);
 	nBuf = _vsnprintf(buffy, 1024, format_, args);
@@ -49,9 +46,11 @@ static inline void DBJ_OUTPUT_DBG_STRNG(const char * format_, ...)
 		OutputDebugStringA("DBJ_OUTPUT_DBG_STRNG buffer overflow\n");
 	va_end(args);
 }
-#endif
+#else // ! _DEBUG
+#define DBJ_OUTPUT_DBG_STRNG(const char *format_, ...) ((void)0)
+#endif // ! _DEBUG
 
-#pragma endregion 
+#pragma endregion
 /*
 	terror == terminating error
 	NOTE: all the bets are of so no point of using some clever logging
@@ -61,7 +60,7 @@ static inline void dbj_capi_terror(const char *msg_, const char *file_, const in
 	DBJ_ASSERT(msg_ && file_ && line_);
 	// all the bets are of at this point
 	// thus not using some fancy logging
-	fputs(msg_, stderr) ;
+	fputs(msg_, stderr);
 	perror(DBJ_ERR_PROMPT("\nTerminating error!\n"));
 	exit(EXIT_FAILURE);
 }
@@ -83,7 +82,7 @@ static inline bool dbj_win_vt100_initor_()
 #ifdef _DEBUG
 #define DBG_PRINT(...) DBJ_OUTPUT_DBG_STRNG(__VA_ARGS__)
 #else
-#define DBG_PRINT(...) __noop
+#define DBG_PRINT(...) ((void)0)
 #endif // ! _DEBUG
 ///	-----------------------------------------------------------------------------------------
 // CAUTION! DBJ_VERIFY works in release builds too
@@ -92,7 +91,7 @@ static inline bool dbj_win_vt100_initor_()
 
 // x should be bool type here
 #define DBJ_VERIFY_(x, file, line) \
-	if (! (x) )                \
+	if (!(x))                      \
 	dbj_capi_terror("Expression: " #x ", failed ", file, line)
 
 #define DBJ_VERIFY(x) DBJ_VERIFY_((x), __FILE__, __LINE__)
@@ -119,11 +118,11 @@ static inline bool dbj_win_vt100_initor_()
 
 #undef DBJ_FAST_FAIL
 #ifdef _DEBUG
-#define DBJ_FAST_FAIL       \
-	do                      \
-	{                       \
-		DBJ_PERROR;         \
-		__debugbreak();     \
+#define DBJ_FAST_FAIL   \
+	do                  \
+	{                   \
+		DBJ_PERROR;     \
+		__debugbreak(); \
 	} while (0)
 #else // !_DEBUG
 #define DBJ_FAST_FAIL       \
