@@ -47,7 +47,7 @@ static inline void DBJ_OUTPUT_DBG_STRNG(const char *format_, ...)
 	va_end(args);
 }
 #else // ! _DEBUG
-#define DBJ_OUTPUT_DBG_STRNG(const char *format_, ...) ((void)0)
+#define DBJ_OUTPUT_DBG_STRNG(...) ((void)0)
 #endif // ! _DEBUG
 
 #pragma endregion
