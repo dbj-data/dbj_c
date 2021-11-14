@@ -1,5 +1,6 @@
 #pragma once
 // https://godbolt.org/z/WjWfEhbde
+
 #ifndef  __GNUC__
 #error GCC or clang is required
 #endif
