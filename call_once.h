@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef __GNUC__
 // only C11 and up; or until not implemented?
 #if __STDC_VERSION__ >= 201112L
 
@@ -47,3 +48,4 @@ int main (int argc, char ** argv)
 #endif // DBJ_TESTING_CALL_ONCE
 
 #endif // __STDC_VERSION__ >= 201112L
+#endif // __GNUC__
