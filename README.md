@@ -1,10 +1,14 @@
-<h1 style="font-size:64px;"> W.I.P. </h1>
+![ ](media/work_in_progres_raw.jpg)
+>Work in progress
 
-<h1> dbj_capi </h1>
+<h3>dbj c api aka</h3>
+<h1>dbj_capi&trade;</h1>
 
-## dbj specific top level C
+## dbj re-usable C
 
-The collection of top level standard C. Meaning: this is or should be used in all of C and possibly C++ code. 
+The collection of top level standard C. 
+
+Meaning: this is or should be used in all of C; and possibly all of the C++ code. 
 
 ## How to use
 
@@ -12,13 +16,15 @@ The collection of top level standard C. Meaning: this is or should be used in al
 - eg  `f:/machine_wide` goes to  path
   - were this is in `f:/machine_wide/dbj_capi`
 - Include as (for example) `#include <dbj_capi/ccommon.h> `
+- How to "wrangle" with VS Code and clang to make this work, you are qualified for :wink:
 
-## NOTES
+## Notes on Style
 
 - This code is [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) code.
-- We work only on Windows 10
-  - Usig the 64 bit clang-cl compiler (comes with Visual Studio 2019)
-    - cl.exe (aka MSVC) can not be used
+- This code is only Windows (10) code
+  - Using the 64 bit clang-cl compiler (comes with Visual Studio 2019)
+      - Support for [TDM GCC 64](https://jmeubank.github.io/tdm-gcc/) is "in the pipeline"
+- Let us be clear: cl.exe (aka MSVC) can not be used (gasp!)
     - this is because MSVC is not [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) compiler.
 - Why WIN32?
   - Windows is built on WIN32
@@ -26,9 +32,9 @@ The collection of top level standard C. Meaning: this is or should be used in al
   - WIN32 is ANSI C API.
     - with some extensions but not on the level of [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)
 
-## Which C, exactly?
+### Which C exactly, are we talking about?
 
-  **[standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)** with all available clang/gcc extensions. 
+  **[standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899)** with **all** the available clang/gcc extensions. 
   
 For standard conformance, use any of the following:
 ```c
