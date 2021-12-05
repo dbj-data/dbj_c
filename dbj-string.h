@@ -1,5 +1,36 @@
 #ifndef DBJ_STRING_INCLUDED
 #define DBJ_STRING_INCLUDED
+
+// officialy not until C23
+#if __STDC_VERSION__ <= 201710L
+// _memccpy in MSVC
+// https://developers.redhat.com/blog/2019/08/12/efficient-string-copying-and-concatenation-in-c
+/*
+struct Book {
+    int id;
+    char name[0xFF];
+};
+
+static inline struct Book *book_populate(struct Book *bptr_,
+                                         char *const new_name_) {
+    assert(bptr_);
+    bptr_->id = 13;
+    memccpy(bptr_->name, new_name_, '\0', 0xFF);
+    return bptr_;
+}
+
+that memccpy above is much faster then snprintf(bptr_->name, 0xFF, "%s", new_name_ );
+*/
+void *memccpy(void * /*restrict*/ dst, const void * /*restrict*/ src, int c, size_t n) {
+    const char *s = src;
+    for (char *ret = dst; n; ++ret, ++s, --n) {
+        *ret = *s;
+        if ((unsigned char)*ret == (unsigned char)c) return ret + 1;
+    }
+    return 0;
+}
+#endif
+
 /*
    dbj capi string is an char array in a struct, for example
 
@@ -58,12 +89,14 @@ typedef DBJ_STRING_TYPE(16) dbj_string_16;
 typedef DBJ_STRING_TYPE(8) dbj_string_8;
 
 /*
-this is string variable declaration anonymous struct used thus no name clashes
-can be adorned of course
+this is dbj string variable declaration anonymous struct used thus no name clashes
 
 static const DBJ_STRING( str_global, 123 ) = {{"static const global dbj string"}};
 
     printf("%s", str_global.data );
+
+    there is no need for a size function, inside is just an array with known size:
+
     printf("%zu", sizeof str_global.data );
 
 */
@@ -72,33 +105,28 @@ static const DBJ_STRING( str_global, 123 ) = {{"static const global dbj string"}
     struct                       \
     {                            \
         char data[SIZE_];        \
-    } NAME_ // = {.size = SIZE_} <-- no can do for VLA, ie, if SIZE_ is a runtime value
+    } NAME_ // = {.size = SIZE_} <-- no can do for VLA, if SIZE_ is a runtime value!
 
 #undef DBJ_STRING_SIZE
 #define DBJ_STRING_SIZE(STR_) DBJ_COUNT_OF(STR_.data)
 
 #undef DBJ_STRING_ASSIGN
 
-#ifdef _MSC_VER
-// #ifdef __STDC_LIB_EXT1__
+// consider this macro name as the guidance
+// this does not work if target or is not zero terminated
+// S_ is string literal
 #define DBJ_STRING_ASSIGN(STR_, S_)                                         \
     do                                                                      \
     {                                                                       \
-        strncpy_s(STR_.data, sizeof(STR_.data), S_, sizeof(STR_.data) - 1); \
+        memccpy(STR_.data, S_, '\0', sizeof(STR_.data)-1);                  \
     } while (0)
-#else
-#define DBJ_STRING_ASSIGN(STR_, S_)                    \
-    do                                                 \
-    {                                                  \
-        strncpy(STR_.data, S_, sizeof(STR_.data) - 1); \
-    } while (0)
-#endif
+
 
 // this is important
-// variable can be in 3 states: exist, does not exist and exist but **empty**
-// that is dbj::valstat related and is not that usual in programing languages
-// but in e.g. databases it is a norm; field is always there but can be empty
-// we declare empty dbj component string the one that has '\0' as the first char
+// Any field can be in 3 states: exist, does not exist and exist but **empty**
+// In databases field is always there but can be empty too
+// we define as empty an dbj string the one that has '\0' as the first char
+//
 
 #undef DBJ_STRING_SET_EMPTY
 #define DBJ_STRING_SET_EMPTY(STR_) (STR_.data[0] = '\0')
