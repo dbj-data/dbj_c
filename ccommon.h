@@ -234,6 +234,17 @@ void __fastfail(unsigned int);
 #define DBJ_FAST_FAIL exit(-1)
 #endif
 
+// https://nullprogram.com/blog/2021/07/30/
+static inline  char * dbj_strdup_(const char *s)
+{
+    const size_t len = strlen(s) + 1;
+    char *c = calloc(len, sizeof(char));
+    if (c) {
+        memcpy(c, s, len);  // GOOD
+    }
+    return c;
+}
+
 
 // AFAIK above is pure C ?
 DBJ_EXTERN_C_END
