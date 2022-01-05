@@ -21,7 +21,7 @@ static inline struct Book *book_populate(struct Book *bptr_,
 
 that memccpy above is much faster then snprintf(bptr_->name, 0xFF, "%s", new_name_ );
 */
-void *memccpy(void * /*restrict*/ dst, const void * /*restrict*/ src, int c, size_t n) {
+static inline void *memccpy(void * /*restrict*/ dst, const void * /*restrict*/ src, int c, size_t n) {
     const char *s = src;
     for (char *ret = dst; n; ++ret, ++s, --n) {
         *ret = *s;
