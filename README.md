@@ -4,6 +4,16 @@
 <h3>dbj c api aka</h3>
 <h1>dbj_capi&trade;</h1>
 
+#### Intro
+
+On this planet there is a see of wel crafted C code ready for copy paste. Ona has to have some usage logic in order not to drawn in redundant versions of code doing the same thing equaly well.
+
+For example
+
+For core set of data types everuone needs, I have decided to use [Troy D. Hanson uthash and the rest](https://troydhanson.github.io/uthash/). There are [Matias Gustavson](https://github.com/mattiasgustavsson), [STB](https://github.com/nothings/stb) (Sean T. Barret) and a lot more diferent but equaly well crafted reusable C code. Deciding which one to use takes a lot of time. The time I do not have.
+
+I will reuse but will waste as little time as possible in deciding what to reuse. Logic is simple: repo has to be alive and with aq lots of contributors. In that case it is a good candidate to be reused.
+
 ## dbj re-usable C
 
 The collection of top level standard C. 
@@ -17,6 +27,15 @@ Meaning: this is or should be used in all of C; and possibly all of the C++ code
   - were this is in `f:/machine_wide/dbj_capi`
 - Include as (for example) `#include <dbj_capi/ccommon.h> `
 - How to "wrangle" with VS Code and clang to make this work, you are qualified for :wink:
+
+Two software composition techniques are on the top of priorities:
+
+1. single header files
+   1. thus no libraries
+2. unity builds
+   1. thus faster builds
+
+Beware: Code in here is far from sorted and oriented in this direction, or fully documented.
 
 ## Notes on Style
 
@@ -41,10 +60,11 @@ For standard conformance, use any of the following:
 -std=c90 -pedantic
 -std=c99 -pedantic
 -std=c11 -pedantic
+-std=c17 -pedantic
 ```
-One can use `C17`,`c18`,`c2x` or whatever. `c11` is still the standard 2021 Q4.
+One can use `C17`,`c18`,`c2x` or whatever. `c17` is still the standard 2022 Q4.
 
-C11 was issued by ISO in 2011. There has been one Technical Corrigendum, fixing the definitions of `__STDC_VERSION__` and `__STDC_LIB_EXT1__`.
+C11 was release by ISO WG14 in 2011. There has been one Technical Corrigendum, fixing the definitions of `__STDC_VERSION__` and `__STDC_LIB_EXT1__`.
 
 > ANSI did not issue its own versions of the 1999 or 2011 standards, adopting the ISO standards instead.
 
@@ -69,4 +89,4 @@ We think this is probably the key feature of clang compiler. Please make sure yo
 
 ---
 
-&copy; 2021 by dbj at dbj dot org  htpps://dbj.org/license_dbj
+&copy; 2021, 2022 by dbj at dbj dot org  htpps://dbj.org/license_dbj
