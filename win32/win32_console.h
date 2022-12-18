@@ -141,5 +141,5 @@ extern "C" {
 #endif // __cplusplus
 
 #else
-#error Reuired WIN10 build number has to be 10586 or greater
+#error Required WIN10 build number has to be 10586 or greater
 #endif // _WIN32_WINNT_WIN10
