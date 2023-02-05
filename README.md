@@ -4,7 +4,7 @@
 <h3>dbj c api aka</h3>
 <h1>dbj_capi&trade;</h1>
 
-#### Intro
+## Intro
 
 On this planet there is a see of wel crafted C code ready for copy paste. Ona has to have some usage logic in order not to drawn in redundant versions of code doing the same thing equaly well.
 
@@ -14,30 +14,28 @@ For core set of data types everuone needs, I have decided to use [Troy D. Hanson
 
 I will reuse but will waste as little time as possible in deciding what to reuse. Logic is simple: repo has to be alive and with aq lots of contributors. In that case it is a good candidate to be reused.
 
-## dbj re-usable C
+## This is attempt to provide dbj re-usable C
 
-The collection of top level standard C. 
+The collection of top level standard C, idioms, mechanisms, functions, libs. 
 
-Meaning: this is or should be used in all of C; and possibly all of the C++ code. 
+Meaning: this is or should be used in all of my standard C projects; and possibly all of the C++ code, I am working on. 
 
 ## How to use
 
-- put the folder above this folder, on the path
-- eg  `f:/machine_wide` goes to  path
-  - were this is in `f:/machine_wide/dbj_capi`
-- Include as (for example) `#include <dbj_capi/ccommon.h> `
-- How to "wrangle" with VS Code and clang to make this work, you are qualified for :wink:
+Simple, always use it as a submodule of my [MACHINE_WIDE](https://github.com/dbj-data/machine_wide) code.
 
-Two software composition techniques are on the top of priorities:
+- How to "wrangle" with VS Code and clang to make this work, you are more than qualified for :wink: , without me telling you.
+
+## Notes on Style
+
+Two software composition techniques are on the top of my priorities (this is opposite of inheritance) :
 
 1. single header files
    1. thus no libraries
-2. unity builds
+2. [unity builds](https://en.wikipedia.org/wiki/Unity_build)
    1. thus faster builds
 
-Beware: Code in here is far from sorted and oriented in this direction, or fully documented.
-
-## Notes on Style
+Beware: Code in here is far from sorted. But I am honestly oriented in this direction.
 
 - This code is [standard C](http://www.open-std.org/jtc1/sc22/wg14/www/standards.html#9899) code.
 - This code is only Windows (10) code
